@@ -20,6 +20,7 @@ npm run dev
 | `src/assets/` | 이미지, 아이콘, 폰트 |
 | `src/components/common/` | 공통 UI |
 | `src/components/kiosk/` | 키오스크 전용 UI |
+| `src/components/onboarding/` | 온보딩 전용 UI |
 | `src/features/personalization/` | 접근성 개인화 |
 | `src/pages/` | 화면 단위 구성 |
 | `src/styles/` | 공통 스타일 |
