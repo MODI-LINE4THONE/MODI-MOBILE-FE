@@ -1,5 +1,5 @@
-import SplashPage from './pages/onboarding/SplashPage.jsx'
+import LoginPage from './pages/onboarding/LoginPage.jsx'
 
 export default function App() {
-  return <SplashPage />
+  return <LoginPage />
 }
