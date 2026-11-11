@@ -13,6 +13,9 @@ export const onboardingColors = {
   choiceBackground: '#F4F6FA',
   choiceSelected: '#DEE1E9',
   choicePressed: '#DEE1E9',
+  infoBoxBackground: '#F4F6FA',
+  progressFilled: '#2456E8',
+  progressEmpty: '#F4F6FA',
   gradientBlue: '#E8EFFE',
 
   // 상태 표시줄
