@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import styled, { css } from 'styled-components'
 import { onboardingColors } from '../../styles/onboarding/colors'
 
@@ -25,8 +26,9 @@ const Card = styled.div`
         transform 0.1s ease-out,
         background-color 0.1s ease-out;
 
-      /* 누르는 동안: 배경색 진하게 + 0.98배 */
-      &:active {
+      /* 누르는 동안 + 누른 뒤 이동 전까지(data-pressed): 배경색 진하게 + 0.98배 */
+      &:active,
+      &[data-pressed='true'] {
         background: ${onboardingColors.cardPressed};
         transform: scale(0.98);
       }
@@ -71,6 +73,9 @@ const Body = styled.span`
     `}
 `
 
+// 누름 효과(0.1초 전환)가 끝까지 보이도록 이동을 늦추는 시간
+const PRESS_DELAY_MS = 150
+
 // 회색 카드 + 연파랑 원 아이콘. 글자 구성은 children으로 화면마다 채운다.
 // 기본값은 04 홈 화면 카드 기준.
 // - icon: 아이콘 이미지 경로 (import한 svg)
@@ -94,14 +99,32 @@ export default function IconCard({
   children,
 }) {
   const clickable = Boolean(onClick)
+  const [pressed, setPressed] = useState(false)
+  const timerRef = useRef(null)
+
+  // 화면이 사라질 때 남은 타이머 취소
+  useEffect(() => () => clearTimeout(timerRef.current), [])
+
+  // 누름 효과를 보여 준 뒤 PRESS_DELAY_MS 후에 이동. 기다리는 동안 다시 눌러도 무시한다.
+  // 마우스, 터치, 키보드(Enter/Space) 모두 <button>의 click으로 들어온다.
+  const handleClick = (event) => {
+    if (timerRef.current) return
+    setPressed(true)
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null
+      setPressed(false)
+      onClick(event)
+    }, PRESS_DELAY_MS)
+  }
 
   return (
     <Card
       as={clickable ? 'button' : 'div'}
       type={clickable ? 'button' : undefined}
-      onClick={onClick}
+      onClick={clickable ? handleClick : undefined}
       className={className}
       $clickable={clickable}
+      data-pressed={clickable ? pressed : undefined}
       $height={height}
       $radius={radius}
       $paddingLeft={paddingLeft}
