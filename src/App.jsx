@@ -1,13 +1,13 @@
-import styled from 'styled-components'
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router'
+import { onboardingRoutes } from './app/OnboardingFlow.jsx'
 
-const Title = styled.h1`
-  font-family: system-ui, sans-serif;
-`
+// 앱 전체 주소. 홈 화면 등 /onboarding 밖의 화면이 생기면 여기에 추가한다.
+const router = createBrowserRouter([
+  { path: '/', element: <Navigate to="/onboarding" replace /> },
+  onboardingRoutes, // /onboarding/... (온보딩 01~08)
+  { path: '*', element: <Navigate to="/" replace /> },
+])
 
 export default function App() {
-  return (
-    <main>
-      <Title>MODI 키오스크</Title>
-    </main>
-  )
+  return <RouterProvider router={router} />
 }
