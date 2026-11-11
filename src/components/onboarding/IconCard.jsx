@@ -77,7 +77,7 @@ const Body = styled.span`
 const PRESS_DELAY_MS = 150
 
 // 회색 카드 + 연파랑 원 아이콘. 글자 구성은 children으로 화면마다 채운다.
-// 기본값은 04 홈 화면 카드 기준.
+// 기본값은 04 시작 화면 카드 기준.
 // - icon: 아이콘 이미지 경로 (import한 svg)
 // - iconWidth: 아이콘 가로(px). 생략하면 파일 원래 크기
 // - iconOffsetY: 아이콘을 원 가운데에서 위로 올리는 정도(px)

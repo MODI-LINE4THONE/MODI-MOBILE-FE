@@ -47,7 +47,7 @@ const noop = () => {}
 
 // userId: 인사말에 보일 아이디 (로그인할 때 입력한 아이디)
 // onProfileClick / onNfcClick: 각 카드를 누르면 호출
-export default function HomePage({ userId = 'user01', onProfileClick, onNfcClick }) {
+export default function StartPage({ userId = 'user01', onProfileClick, onNfcClick }) {
   return (
     <OnboardingLayout withStatusBar>
       <Content>

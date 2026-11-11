@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import SplashPage from '../pages/onboarding/SplashPage'
 import LoginPage from '../pages/onboarding/LoginPage'
 import SignupPage from '../pages/onboarding/SignupPage'
-import HomePage from '../pages/onboarding/HomePage'
+import StartPage from '../pages/onboarding/StartPage'
 import ProfileSetupPage from '../pages/onboarding/ProfileSetupPage'
 import NfcGuidePage from '../pages/onboarding/NfcGuidePage'
 import NfcCodePage from '../pages/onboarding/NfcCodePage'
@@ -32,11 +32,11 @@ const SCREENS = {
   splash: { path: '/onboarding', title: 'MODI', back: null }, // 01
   login: { path: '/onboarding/login', title: '로그인', back: null }, // 02
   signup: { path: '/onboarding/signup', title: '회원가입', back: 'login' }, // 03
-  home: { path: '/onboarding/home', title: '홈', back: null, needsLogin: true }, // 04
-  profile: { path: '/onboarding/profile', title: '접근성 프로필 설정', back: 'home', needsLogin: true }, // 05
-  nfcGuide: { path: '/onboarding/nfc/guide', title: 'NFC 키링 등록 방법', back: 'home', needsLogin: true }, // 06
-  nfcCode: { path: '/onboarding/nfc/code', title: 'NFC 키링 등록 코드 입력', back: 'home', needsLogin: true }, // 07
-  nfcComplete: { path: '/onboarding/nfc/complete', title: 'NFC 키링 등록 완료', back: 'home', needsLogin: true }, // 08
+  start: { path: '/onboarding/start', title: '시작하기', back: null, needsLogin: true }, // 04
+  profile: { path: '/onboarding/profile', title: '접근성 프로필 설정', back: 'start', needsLogin: true }, // 05
+  nfcGuide: { path: '/onboarding/nfc/guide', title: 'NFC 키링 등록 방법', back: 'start', needsLogin: true }, // 06
+  nfcCode: { path: '/onboarding/nfc/code', title: 'NFC 키링 등록 코드 입력', back: 'start', needsLogin: true }, // 07
+  nfcComplete: { path: '/onboarding/nfc/complete', title: 'NFC 키링 등록 완료', back: 'start', needsLogin: true }, // 08
 }
 
 const findScreenByPath = (pathname) => {
@@ -54,7 +54,7 @@ function OnboardingFlow() {
   // 화면 사이에 넘기는 정보 (메모리에만 보관 → 새로고침하면 사라짐)
   const [userId, setUserId] = useState(null) // 02 로그인 아이디 → 04 인사말
   const [profile, setProfile] = useState({ target: null, nickname: '' }) // 05 선택 기억
-  const [nfcGuideFrom, setNfcGuideFrom] = useState('home') // 06에 들어온 화면 ('home' | 'profile')
+  const [nfcGuideFrom, setNfcGuideFrom] = useState('start') // 06에 들어온 화면 ('start' | 'profile')
   const [nfcResult, setNfcResult] = useState(null) // 07 → 08 { keyringId, registeredAt }
 
   // 화면이 바뀌면: 탭 제목 변경, 맨 위로 스크롤, 화면 읽기 프로그램이 새 화면 처음부터 읽도록 포커스 이동
@@ -140,7 +140,7 @@ function LoginScreen() {
       onSignup={() => go('signup')}
       onLogin={({ userId: id }) => {
         setUserId(id)
-        go('home', { replace: true })
+        go('start', { replace: true })
       }}
     />
   )
@@ -153,16 +153,16 @@ function SignupScreen() {
   return <SignupPage onBack={toLogin} onGoToLogin={toLogin} />
 }
 
-// 04 홈: "접근성 프로필 설정" → 05 / "NFC 키링 등록" → 06
-function HomeScreen() {
+// 04 시작: "접근성 프로필 설정" → 05 / "NFC 키링 등록" → 06
+function StartScreen() {
   const { userId, setNfcGuideFrom } = useOutletContext()
   const { go } = useScreenNav()
   return (
-    <HomePage
+    <StartPage
       userId={userId}
       onProfileClick={() => go('profile')}
       onNfcClick={() => {
-        setNfcGuideFrom('home')
+        setNfcGuideFrom('start')
         go('nfcGuide')
       }}
     />
@@ -173,18 +173,18 @@ function HomeScreen() {
 function ProfileScreen() {
   const { profile, setProfile, setNfcGuideFrom } = useOutletContext()
   const { go, goBackTo } = useScreenNav()
-  const toHome = () => goBackTo('home')
+  const toStart = () => goBackTo('start')
   return (
     <ProfileSetupPage
       initialTarget={profile.target}
       initialNickname={profile.nickname}
-      onBack={toHome}
+      onBack={toStart}
       onNext={(value) => {
         setProfile(value)
         setNfcGuideFrom('profile')
         go('nfcGuide', { replace: true })
       }}
-      onPrevious={toHome}
+      onPrevious={toStart}
     />
   )
 }
@@ -195,10 +195,10 @@ function NfcGuideScreen() {
   const { go, goBackTo } = useScreenNav()
   return (
     <NfcGuidePage
-      onBack={() => goBackTo('home')}
+      onBack={() => goBackTo('start')}
       onNext={() => go('nfcCode', { replace: true })}
       onPrevious={() =>
-        nfcGuideFrom === 'profile' ? go('profile', { replace: true }) : goBackTo('home')
+        nfcGuideFrom === 'profile' ? go('profile', { replace: true }) : goBackTo('start')
       }
     />
   )
@@ -210,7 +210,7 @@ function NfcCodeScreen() {
   const { go, goBackTo } = useScreenNav()
   return (
     <NfcCodePage
-      onBack={() => goBackTo('home')}
+      onBack={() => goBackTo('start')}
       onNext={({ code, registeredAt }) => {
         setNfcResult({ keyringId: code, registeredAt })
         go('nfcComplete', { replace: true })
@@ -230,7 +230,7 @@ function NfcCompleteScreen() {
     <NfcCompletePage
       keyringId={nfcResult.keyringId}
       registeredAt={nfcResult.registeredAt}
-      onBack={() => goBackTo('home')}
+      onBack={() => goBackTo('start')}
     />
   )
 }
@@ -246,7 +246,7 @@ export const onboardingRoutes = {
     {
       element: <RequireLogin />, // needsLogin 화면(04~08)
       children: [
-        { path: SCREENS.home.path, element: <HomeScreen /> },
+        { path: SCREENS.start.path, element: <StartScreen /> },
         { path: SCREENS.profile.path, element: <ProfileScreen /> },
         { path: SCREENS.nfcGuide.path, element: <NfcGuideScreen /> },
         { path: SCREENS.nfcCode.path, element: <NfcCodeScreen /> },
