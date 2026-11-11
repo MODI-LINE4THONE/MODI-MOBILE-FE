@@ -10,6 +10,9 @@ export const onboardingColors = {
   cardBackground: '#F4F6FA',
   cardPressed: '#DEE1E9',
   iconCircle: '#E8EFFE',
+  choiceBackground: '#F4F6FA',
+  choiceSelected: '#DEE1E9',
+  choicePressed: '#DEE1E9',
   gradientBlue: '#E8EFFE',
 
   // 상태 표시줄

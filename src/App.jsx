@@ -1,5 +1,5 @@
-import HomePage from './pages/onboarding/HomePage.jsx'
+import ProfileSetupPage from './pages/onboarding/ProfileSetupPage.jsx'
 
 export default function App() {
-  return <HomePage />
+  return <ProfileSetupPage />
 }
