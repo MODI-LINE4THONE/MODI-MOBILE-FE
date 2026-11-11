@@ -1,9 +1,19 @@
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import { onboardingColors } from '../../styles/onboarding/colors'
 
+// 비활성일 때 누르면 버튼 동작·폼 제출을 막는다
+const preventClick = (e) => e.preventDefault()
+
 // 온보딩 파란 큰 버튼 (343 x 54)
-const PrimaryButton = styled.button.attrs(({ type }) => ({
+// disabled: 비활성 모양 + 눌러도 동작 없음.
+//   HTML disabled 대신 aria-disabled를 써서 키보드 이동 순서에 남고,
+//   화면 읽기 프로그램은 "비활성"으로 읽는다.
+const PrimaryButton = styled.button.attrs(({ type, disabled, onClick }) => ({
   type: type ?? 'button',
+  disabled: undefined,
+  'aria-disabled': disabled ? 'true' : undefined,
+  onClick: disabled ? preventClick : onClick,
+  $disabled: Boolean(disabled),
 }))`
   display: block;
   width: 100%;
@@ -30,6 +40,19 @@ const PrimaryButton = styled.button.attrs(({ type }) => ({
     outline: 2px solid ${onboardingColors.text};
     outline-offset: 2px;
   }
+
+  /* 비활성: 누르는 동안의 효과도 없음 */
+  ${({ $disabled }) =>
+    $disabled &&
+    css`
+      background: ${onboardingColors.primaryDisabled};
+      color: ${onboardingColors.onPrimaryDisabled};
+      cursor: default;
+
+      &:active {
+        background: ${onboardingColors.primaryDisabled};
+      }
+    `}
 `
 
 export default PrimaryButton

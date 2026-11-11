@@ -36,11 +36,21 @@ const CodeArea = styled.div`
   margin: 14px 0 0 22px;
 `
 
-// 화면만 구현 (다음·이전으로 화면 이동 없음)
-export default function NfcCodePage() {
+const CODE_FORMAT = 'AA9999'
+
+// onNext({ code, registeredAt }): 6자리가 다 찬 뒤 "다음"을 누르면 호출.
+//   화면 이동은 이 화면을 쓰는 쪽(NfcRegisterFlow)이 맡는다. 없으면 동작 없음.
+// "이전으로"는 아직 동작 없음.
+export default function NfcCodePage({ onNext }) {
   const titleId = useId()
   const descriptionId = useId()
   const [code, setCode] = useState('')
+  const isComplete = code.length === CODE_FORMAT.length
+
+  const handleNext = () => {
+    if (!isComplete) return
+    onNext?.({ code, registeredAt: new Date() })
+  }
 
   return (
     <OnboardingLayout withStatusBar>
@@ -54,13 +64,15 @@ export default function NfcCodePage() {
           <CodeInput
             value={code}
             onChange={setCode}
-            format="AA9999"
+            format={CODE_FORMAT}
             labelledBy={titleId}
             describedBy={descriptionId}
           />
         </CodeArea>
         <OnboardingFooter
           primaryLabel="다음"
+          primaryDisabled={!isComplete}
+          onPrimaryClick={handleNext}
           step={2}
           totalSteps={3}
           progressLabel="NFC 키링 등록 단계"

@@ -1,5 +1,5 @@
-import NfcCodePage from './pages/onboarding/NfcCodePage.jsx'
+import NfcRegisterFlow from './pages/onboarding/NfcRegisterFlow.jsx'
 
 export default function App() {
-  return <NfcCodePage />
+  return <NfcRegisterFlow />
 }

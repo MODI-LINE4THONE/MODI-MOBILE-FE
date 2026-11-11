@@ -10,7 +10,7 @@ const Card = styled.div`
   margin: 0;
   padding: 0 0 0 ${({ $paddingLeft }) => $paddingLeft}px;
   border: none;
-  border-radius: 25px;
+  border-radius: ${({ $radius }) => $radius}px;
   background: ${onboardingColors.cardBackground};
   color: inherit;
   font: inherit;
@@ -57,11 +57,18 @@ const Icon = styled.img`
   transform: translateY(${({ $offsetY }) => -$offsetY}px);
 `
 
+// 글자 영역: 누를 수 있는 카드(<button>) 안에서는 <span>, 보기만 하는 카드에서는 <div>
 const Body = styled.span`
   display: flex;
   flex: 1;
   flex-direction: column;
   min-width: 0;
+
+  ${({ $offsetY }) =>
+    $offsetY !== 0 &&
+    css`
+      transform: translateY(${$offsetY}px);
+    `}
 `
 
 // 회색 카드 + 연파랑 원 아이콘. 글자 구성은 children으로 화면마다 채운다.
@@ -69,12 +76,16 @@ const Body = styled.span`
 // - icon: 아이콘 이미지 경로 (import한 svg)
 // - iconWidth: 아이콘 가로(px). 생략하면 파일 원래 크기
 // - iconOffsetY: 아이콘을 원 가운데에서 위로 올리는 정도(px)
+// - bodyOffsetY: 글자 묶음을 카드 세로 가운데에서 아래로 옮기는 정도(px)
+// - radius: 카드 둥글기(px)
 // - onClick: 있으면 누를 수 있는 <button>, 없으면 보기만 하는 <div>
 export default function IconCard({
   icon,
   iconWidth,
   iconOffsetY = 0,
+  bodyOffsetY = 0,
   height = 136,
+  radius = 25,
   circleSize = 80,
   paddingLeft = 27,
   gap = 23.81,
@@ -92,13 +103,16 @@ export default function IconCard({
       className={className}
       $clickable={clickable}
       $height={height}
+      $radius={radius}
       $paddingLeft={paddingLeft}
       $gap={gap}
     >
       <Circle $size={circleSize}>
         <Icon src={icon} alt="" $width={iconWidth} $offsetY={iconOffsetY} />
       </Circle>
-      <Body>{children}</Body>
+      <Body as={clickable ? 'span' : 'div'} $offsetY={bodyOffsetY}>
+        {children}
+      </Body>
     </Card>
   )
 }

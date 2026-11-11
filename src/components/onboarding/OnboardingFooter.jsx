@@ -60,12 +60,14 @@ const Progress = styled(ProgressBar)`
 
 // 05~08 하단 버튼 영역
 // - primaryLabel / onPrimaryClick / primaryType: 파란 버튼
+// - primaryDisabled: 파란 버튼 비활성 (07: 코드 6자리가 다 차기 전)
 // - showBack: "이전으로" 표시 여부 (08은 false)
 // - step / totalSteps: 진행 막대 (step이 없으면 그리지 않음)
 export default function OnboardingFooter({
   primaryLabel,
   onPrimaryClick,
   primaryType = 'button',
+  primaryDisabled = false,
   showBack = true,
   backLabel = '이전으로',
   onBackClick,
@@ -75,7 +77,7 @@ export default function OnboardingFooter({
 }) {
   return (
     <Footer>
-      <PrimaryButton type={primaryType} onClick={onPrimaryClick}>
+      <PrimaryButton type={primaryType} onClick={onPrimaryClick} disabled={primaryDisabled}>
         {primaryLabel}
       </PrimaryButton>
       {showBack && <BackButton onClick={onBackClick}>{backLabel}</BackButton>}
