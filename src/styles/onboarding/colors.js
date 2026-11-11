@@ -16,6 +16,8 @@ export const onboardingColors = {
   infoBoxBackground: '#F4F6FA',
   progressFilled: '#2456E8',
   progressEmpty: '#F4F6FA',
+  codeCellBackground: '#F4F6FA',
+  codeCellShadow: 'rgba(25, 31, 40, 0.25)', // #191F28, 투명도 25%
   gradientBlue: '#E8EFFE',
 
   // 상태 표시줄
