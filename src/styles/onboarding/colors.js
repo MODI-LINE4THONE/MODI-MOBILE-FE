@@ -23,6 +23,17 @@ export const onboardingColors = {
   codeCellShadow: 'rgba(25, 31, 40, 0.25)', // #191F28, 투명도 25%
   gradientBlue: '#E8EFFE',
 
+  // 입력창 아래 안내 문구 (예: "사용 가능한 아이디입니다.")
+  fieldMessage: '#2456E8',
+
+  // 팝업
+  dimmed: 'rgba(25, 31, 40, 0.2)', // #191F28, 투명도 20%
+  popupBackground: '#FFFFFF',
+  popupIcon: '#2456E8',
+  popupButtonBackground: '#F4F6FA',
+  popupButtonPressed: '#DEE1E9',
+  popupButtonText: '#2456E8',
+
   // 상태 표시줄
   statusBarTime: '#333333',
   statusBarIcon: '#000000',
