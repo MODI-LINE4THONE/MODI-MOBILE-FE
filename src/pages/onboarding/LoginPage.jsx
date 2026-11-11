@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import styled from 'styled-components'
 import OnboardingLayout from '../../components/onboarding/OnboardingLayout'
 import PrimaryButton from '../../components/onboarding/PrimaryButton'
@@ -52,7 +53,12 @@ const LoginButton = styled(PrimaryButton)`
 `
 
 // 화면만 구현 (로그인 기능 없음)
+// 아이디·비밀번호를 둘 다 입력해야 "로그인"이 활성. 띄어쓰기만 있으면 입력 안 한 것으로 본다.
 export default function LoginPage() {
+  const [userId, setUserId] = useState('')
+  const [password, setPassword] = useState('')
+  const canSubmit = userId.trim() !== '' && password.trim() !== ''
+
   return (
     <OnboardingLayout withStatusBar>
       <Form onSubmit={(e) => e.preventDefault()}>
@@ -63,19 +69,25 @@ export default function LoginPage() {
             placeholder="아이디를 입력하세요"
             aria-label="아이디"
             autoComplete="username"
+            value={userId}
+            onChange={(e) => setUserId(e.target.value)}
           />
           <TextInput
             type="password"
             placeholder="비밀번호를 입력하세요"
             aria-label="비밀번호"
             autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </Fields>
         <SignupRow>
           계정이 없으신가요?
           <SignupLink>회원가입</SignupLink>
         </SignupRow>
-        <LoginButton type="submit">로그인</LoginButton>
+        <LoginButton type="submit" disabled={!canSubmit}>
+          로그인
+        </LoginButton>
       </Form>
     </OnboardingLayout>
   )
