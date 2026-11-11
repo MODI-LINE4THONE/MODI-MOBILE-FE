@@ -72,14 +72,16 @@ const InfoValue = styled.dd`
 `
 
 // keyringId: 07에서 입력한 코드 / registeredAt: 07에서 "다음"을 누른 시각(Date)
-// "홈으로 이동"은 아직 동작 없음.
+// onBack: 뒤로가기 화살표 / onHome: "홈으로 이동" (실제 홈 화면이 생기면 연결, 지금은 동작 없음)
 export default function NfcCompletePage({
   keyringId = DEFAULT_KEYRING_ID,
   registeredAt = DEFAULT_REGISTERED_AT,
+  onBack,
+  onHome,
 }) {
   return (
     <OnboardingLayout withStatusBar>
-      <OnboardingHeader title="NFC 키링 등록" />
+      <OnboardingHeader title="NFC 키링 등록" onBack={onBack} />
       <Content>
         <Title>등록 완료</Title>
         <Description>키링이 정상적으로 등록되었습니다.</Description>
@@ -109,6 +111,7 @@ export default function NfcCompletePage({
         </ResultCard>
         <OnboardingFooter
           primaryLabel="홈으로 이동"
+          onPrimaryClick={onHome}
           showBack={false}
           step={3}
           totalSteps={3}

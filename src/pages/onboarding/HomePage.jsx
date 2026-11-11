@@ -42,11 +42,12 @@ const CardDescription = styled.span`
   white-space: pre-line; /* 디자인과 같은 위치에서 줄바꿈 */
 `
 
+// 따로 열었을 때도 카드가 버튼 모양(누름 효과)을 유지하도록 빈 동작을 넘긴다
 const noop = () => {}
 
-// 화면만 구현 (카드 누름 동작 없음)
-// userId: 인사말에 보일 아이디. 나중에 실제 아이디를 넘기면 된다.
-export default function HomePage({ userId = 'user01' }) {
+// userId: 인사말에 보일 아이디 (로그인할 때 입력한 아이디)
+// onProfileClick / onNfcClick: 각 카드를 누르면 호출
+export default function HomePage({ userId = 'user01', onProfileClick, onNfcClick }) {
   return (
     <OnboardingLayout withStatusBar>
       <Content>
@@ -56,13 +57,13 @@ export default function HomePage({ userId = 'user01' }) {
           어떤 걸 시작할까요?
         </Greeting>
         <CardList>
-          <IconCard icon={personIcon} iconOffsetY={1} onClick={noop}>
+          <IconCard icon={personIcon} iconOffsetY={1} onClick={onProfileClick ?? noop}>
             <CardTitle>접근성 프로필 설정</CardTitle>
             <CardDescription>
               {'글자 크기, 화면 대비 등을\n나에게 맞게 설정해요'}
             </CardDescription>
           </IconCard>
-          <IconCard icon={keyringIcon} iconOffsetY={1.5} onClick={noop}>
+          <IconCard icon={keyringIcon} iconOffsetY={1.5} onClick={onNfcClick ?? noop}>
             <CardTitle>NFC 키링 등록</CardTitle>
             <CardDescription>
               {'키오스크에 가져다 대기만 하면\n내 설정이 자동으로 적용돼요'}

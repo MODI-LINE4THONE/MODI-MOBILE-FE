@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import styled from 'styled-components'
 import OnboardingLayout from '../../components/onboarding/OnboardingLayout'
 import { onboardingColors } from '../../styles/onboarding/colors'
@@ -35,7 +36,16 @@ const Tagline = styled.p`
   text-align: center;
 `
 
-export default function SplashPage() {
+const SPLASH_DURATION = 2000 // ms
+
+// onFinish: 화면이 보이고 2초 뒤 호출 (없으면 계속 머무름)
+export default function SplashPage({ onFinish }) {
+  useEffect(() => {
+    if (!onFinish) return undefined
+    const timer = setTimeout(onFinish, SPLASH_DURATION)
+    return () => clearTimeout(timer)
+  }, [onFinish])
+
   return (
     <OnboardingLayout background={splashBackground}>
       <Content>

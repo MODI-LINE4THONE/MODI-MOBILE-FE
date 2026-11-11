@@ -64,11 +64,12 @@ const Arrow = styled.svg`
   height: 17px;
 `
 
-// 뒤로가기 화살표 + 가운데 제목 헤더 (동작 없음)
-export default function OnboardingHeader({ title }) {
+// 뒤로가기 화살표 + 가운데 제목 헤더
+// onBack: 화살표를 누르면 호출 (없으면 동작 없음)
+export default function OnboardingHeader({ title, onBack }) {
   return (
     <Header>
-      <BackButton aria-label="뒤로 가기">
+      <BackButton aria-label="뒤로 가기" onClick={onBack}>
         <Arrow viewBox="0 0 9 17" fill="none" aria-hidden="true">
           <path
             d="M8.2 0.8L0.8 8.5L8.2 16.2"

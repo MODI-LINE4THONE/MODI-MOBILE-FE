@@ -36,8 +36,9 @@ const SubmitButton = styled(PrimaryButton)`
 `
 
 // 서버 연결 전: 중복확인은 아이디가 입력돼 있으면 항상 "사용 가능".
-// onGoToLogin: 팝업의 "로그인 화면으로 돌아가기"를 누르면 호출 (화면 연결 작업 때 넘겨줄 예정, 지금은 동작 없음)
-export default function SignupPage({ onGoToLogin }) {
+// onBack: 뒤로가기 화살표를 누르면 호출
+// onGoToLogin: 팝업의 "로그인 화면으로 돌아가기"를 누르면 호출
+export default function SignupPage({ onBack, onGoToLogin }) {
   const [userId, setUserId] = useState('')
   const [checkedUserId, setCheckedUserId] = useState(null) // 중복확인을 마친 아이디
   const [password, setPassword] = useState('')
@@ -63,7 +64,7 @@ export default function SignupPage({ onGoToLogin }) {
 
   return (
     <OnboardingLayout withStatusBar>
-      <OnboardingHeader title="회원가입" />
+      <OnboardingHeader title="회원가입" onBack={onBack} />
       <Form onSubmit={handleSubmit}>
         <Fields>
           <TextInput

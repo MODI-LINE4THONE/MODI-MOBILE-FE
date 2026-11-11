@@ -35,18 +35,26 @@ const NicknameField = styled.div`
   margin-top: 79px;
 `
 
-// 화면만 구현 (다음·이전으로 화면 이동 없음)
-export default function ProfileSetupPage() {
+// initialTarget / initialNickname: 처음 채워 둘 값 (예: 다음 화면에서 "이전으로" 돌아왔을 때)
+// onNext({ target, nickname }): 활성 상태에서 "다음"을 누르면 호출
+// onBack: 뒤로가기 화살표 / onPrevious: "이전으로"
+export default function ProfileSetupPage({
+  initialTarget = null,
+  initialNickname = '',
+  onNext,
+  onBack,
+  onPrevious,
+}) {
   const questionId = useId()
-  const [target, setTarget] = useState(null) // null: 처음 들어온 상태
+  const [target, setTarget] = useState(initialTarget) // null: 아직 선택 안 함
   // 별명 칸이 사라져도 값은 여기에 남아, 다시 보일 때 그대로 채워진다.
-  const [nickname, setNickname] = useState('')
+  const [nickname, setNickname] = useState(initialNickname)
   // "다음" 활성: 본인 선택 / 가족 선택 + 별명 입력(띄어쓰기만은 입력 안 한 것으로 봄)
   const canProceed = target === 'self' || (target === 'family' && nickname.trim() !== '')
 
   return (
     <OnboardingLayout withStatusBar>
-      <OnboardingHeader title="접근성 프로필 설정" />
+      <OnboardingHeader title="접근성 프로필 설정" onBack={onBack} />
       <Content>
         <Question id={questionId}>누구를 위한 설정인가요?</Question>
         <Choices
@@ -67,7 +75,12 @@ export default function ProfileSetupPage() {
             />
           </NicknameField>
         )}
-        <OnboardingFooter primaryLabel="다음" primaryDisabled={!canProceed} />
+        <OnboardingFooter
+          primaryLabel="다음"
+          primaryDisabled={!canProceed}
+          onPrimaryClick={() => onNext?.({ target, nickname })}
+          onBackClick={onPrevious}
+        />
       </Content>
     </OnboardingLayout>
   )

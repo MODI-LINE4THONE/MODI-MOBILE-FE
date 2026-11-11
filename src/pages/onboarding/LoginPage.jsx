@@ -52,16 +52,24 @@ const LoginButton = styled(PrimaryButton)`
   margin: auto 0 64px;
 `
 
-// 화면만 구현 (로그인 기능 없음)
+// 로그인 기능(서버 확인)은 아직 없음.
 // 아이디·비밀번호를 둘 다 입력해야 "로그인"이 활성. 띄어쓰기만 있으면 입력 안 한 것으로 본다.
-export default function LoginPage() {
+// onLogin({ userId }): 활성 상태에서 "로그인"을 누르면 호출 (아이디는 앞뒤 띄어쓰기를 뺀 값)
+// onSignup: "회원가입"을 누르면 호출
+export default function LoginPage({ onLogin, onSignup }) {
   const [userId, setUserId] = useState('')
   const [password, setPassword] = useState('')
   const canSubmit = userId.trim() !== '' && password.trim() !== ''
 
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    if (!canSubmit) return
+    onLogin?.({ userId: userId.trim() })
+  }
+
   return (
     <OnboardingLayout withStatusBar>
-      <Form onSubmit={(e) => e.preventDefault()}>
+      <Form onSubmit={handleSubmit}>
         <Title>안녕하세요, MODI입니다.</Title>
         <Fields>
           <TextInput
@@ -83,7 +91,7 @@ export default function LoginPage() {
         </Fields>
         <SignupRow>
           계정이 없으신가요?
-          <SignupLink>회원가입</SignupLink>
+          <SignupLink onClick={onSignup}>회원가입</SignupLink>
         </SignupRow>
         <LoginButton type="submit" disabled={!canSubmit}>
           로그인
