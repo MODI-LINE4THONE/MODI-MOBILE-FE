@@ -1,6 +1,9 @@
-# MODI 키오스크
+# MODI 사용자 모바일 웹
 
-React, Vite, JavaScript, styled-components 기반 키오스크 프론트엔드입니다.
+MODI는 사용자가 정한 접근성 설정에 맞게 키오스크 화면을 바꿔 주는 서비스입니다.
+이 저장소는 사용자가 휴대폰에서 회원가입, 접근성 프로필 설정, NFC 키링 등록을 하는 모바일 웹입니다.
+React, Vite, JavaScript, styled-components로 만들었습니다.
+키오스크 화면(데모 웹)은 다른 저장소에서 따로 관리합니다.
 
 ## 실행
 
@@ -19,7 +22,6 @@ npm run dev
 | `src/app/` | 앱 전역 구성 |
 | `src/assets/` | 이미지, 아이콘, 폰트 |
 | `src/components/common/` | 공통 UI |
-| `src/components/kiosk/` | 키오스크 전용 UI |
 | `src/components/onboarding/` | 온보딩 전용 UI |
 | `src/features/personalization/` | 접근성 개인화 |
 | `src/pages/` | 화면 단위 구성 |
@@ -30,7 +32,7 @@ npm run dev
 
 ## 온보딩 화면 주소
 
-온보딩 화면은 키오스크 화면과 겹치지 않도록 `/onboarding/...` 아래에 둡니다. 화면 이동 규칙은 `src/app/OnboardingFlow.jsx` 한 파일에 모여 있습니다.
+온보딩 화면은 앞으로 추가될 홈 등 다른 화면과 겹치지 않도록 `/onboarding/...` 아래에 둡니다. 화면 이동 규칙은 `src/app/OnboardingFlow.jsx` 한 파일에 모여 있습니다.
 
 | 화면 | 주소 | 파일 |
 | --- | --- | --- |
