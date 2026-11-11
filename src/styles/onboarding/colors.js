@@ -8,6 +8,7 @@ export const onboardingColors = {
   background: '#FFFFFF',
   inputBackground: '#F4F6FA',
   cardBackground: '#F4F6FA',
+  cardPressed: '#DEE1E9',
   iconCircle: '#E8EFFE',
   gradientBlue: '#E8EFFE',
 

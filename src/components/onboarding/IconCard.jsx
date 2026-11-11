@@ -23,12 +23,11 @@ const Card = styled.div`
       -webkit-tap-highlight-color: transparent;
       transition:
         transform 0.1s ease-out,
-        box-shadow 0.1s ease-out;
+        background-color 0.1s ease-out;
 
-      /* 누르는 동안: 1px 파란 외곽선 + 0.98배.
-         외곽선은 안쪽 box-shadow라 크기·내용 위치가 바뀌지 않는다. */
+      /* 누르는 동안: 배경색 진하게 + 0.98배 */
       &:active {
-        box-shadow: inset 0 0 0 1px ${onboardingColors.primary};
+        background: ${onboardingColors.cardPressed};
         transform: scale(0.98);
       }
 
