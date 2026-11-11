@@ -1,5 +1,5 @@
-import SignupPage from './pages/onboarding/SignupPage.jsx'
+import HomePage from './pages/onboarding/HomePage.jsx'
 
 export default function App() {
-  return <SignupPage />
+  return <HomePage />
 }

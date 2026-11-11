@@ -7,6 +7,8 @@ export const onboardingColors = {
   onPrimary: '#FFFFFF',
   background: '#FFFFFF',
   inputBackground: '#F4F6FA',
+  cardBackground: '#F4F6FA',
+  iconCircle: '#E8EFFE',
   gradientBlue: '#E8EFFE',
 
   // 상태 표시줄
