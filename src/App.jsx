@@ -1,5 +1,5 @@
-import SignupPage from './pages/onboarding/SignupPage.jsx'
+import ProfileSetupPage from './pages/onboarding/ProfileSetupPage.jsx'
 
 export default function App() {
-  return <SignupPage />
+  return <ProfileSetupPage />
 }

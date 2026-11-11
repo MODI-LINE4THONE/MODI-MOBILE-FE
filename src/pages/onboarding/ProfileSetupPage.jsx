@@ -41,6 +41,8 @@ export default function ProfileSetupPage() {
   const [target, setTarget] = useState(null) // null: 처음 들어온 상태
   // 별명 칸이 사라져도 값은 여기에 남아, 다시 보일 때 그대로 채워진다.
   const [nickname, setNickname] = useState('')
+  // "다음" 활성: 본인 선택 / 가족 선택 + 별명 입력(띄어쓰기만은 입력 안 한 것으로 봄)
+  const canProceed = target === 'self' || (target === 'family' && nickname.trim() !== '')
 
   return (
     <OnboardingLayout withStatusBar>
@@ -65,7 +67,7 @@ export default function ProfileSetupPage() {
             />
           </NicknameField>
         )}
-        <OnboardingFooter primaryLabel="다음" />
+        <OnboardingFooter primaryLabel="다음" primaryDisabled={!canProceed} />
       </Content>
     </OnboardingLayout>
   )
