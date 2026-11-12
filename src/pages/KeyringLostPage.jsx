@@ -116,7 +116,7 @@ export default function KeyringLostPage() {
         <Disable ref={disableRef} disabled={lost || pending} onClick={() => { setError(''); dialogRef.current.showModal() }}><img src={lock} alt="" />{lost ? '분실 키링 비활성화 완료' : '분실 키링 비활성화'}</Disable>
         <Warning>{lost ? '미리보기 상태입니다. 실제 키링에는 반영되지 않았어요.' : '비활성화 후에는 이 키링으로 화면을 변경할 수 없어요'}</Warning>
       </Card>
-      <Action onClick={() => setMessage('새 키링 발급 화면은 다음 작업에서 연결할 예정입니다.')}><img src={issue} alt="" /><span><strong>새 키링 발급하기</strong><small>새로운 키링을 발급하고 어플과 연결해요</small></span></Action>
+      <Action onClick={() => navigate('/keyrings/issuance')}><img src={issue} alt="" /><span><strong>새 키링 발급하기</strong><small>새로운 키링을 발급하고 어플과 연결해요</small></span></Action>
       <Action onClick={() => setMessage('새 키링 연결 화면은 준비 중입니다.')}><img src={connect} alt="" /><span><strong>새 키링 연결하기</strong><small>새로운 키링을 발급하고 어플과 연결해요</small></span></Action>
       <Info><span><img src={shield} alt="" /></span><div><strong>기존 설정은 안전하게 보관됩니다</strong><small>나의 UI 설정과 이용내역은 계정에 그대로 보관돼요.</small></div></Info>
       <div role="status" aria-live="polite">{message && <Feedback>{message}</Feedback>}</div>
