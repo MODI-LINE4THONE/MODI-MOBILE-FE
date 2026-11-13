@@ -1,5 +1,6 @@
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router'
 import { onboardingRoutes } from './app/OnboardingFlow.jsx'
+import { homeRoutes } from './app/HomeFlow.jsx'
 import AccessibilitySettingsPage from './pages/AccessibilitySettingsPage.jsx'
 import KeyringLostPage from './pages/KeyringLostPage.jsx'
 import KeyringIssuancePage from './pages/KeyringIssuancePage.jsx'
@@ -8,6 +9,7 @@ import KeyringIssuancePage from './pages/KeyringIssuancePage.jsx'
 const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/onboarding" replace /> },
   onboardingRoutes, // /onboarding/... (온보딩 01~08)
+  homeRoutes, // /home (홈)
   { path: '/accessibility', element: <AccessibilitySettingsPage /> },
   { path: '/keyrings/lost', element: <KeyringLostPage /> },
   { path: '/keyrings/issuance', element: <KeyringIssuancePage /> },

@@ -34,6 +34,9 @@ export const onboardingColors = {
   popupButtonPressed: '#DEE1E9',
   popupButtonText: '#2456E8',
 
+  // 홈 상단 알림 종의 새 알림 점
+  notificationDot: '#2456E8',
+
   // 상태 표시줄
   statusBarTime: '#333333',
   statusBarIcon: '#000000',
