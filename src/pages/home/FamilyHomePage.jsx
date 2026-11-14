@@ -57,16 +57,21 @@ const noop = () => {}
 // hasNewNotification: 새 알림이 있으면 종 아이콘에 파란 점
 // profiles: 가족 프로필 목록 (features/family/familyProfiles.js 모양)
 // onProfileClick(profile) / onAddClick: 카드·"가족 프로필 추가"를 누르면 호출 (없으면 동작 없음)
+// onNotificationClick: 알림 종을 누르면 호출 (없으면 누름 효과만)
 export default function FamilyHomePage({
   userId = 'user01',
   hasNewNotification = false,
   profiles = [],
   onProfileClick,
   onAddClick,
+  onNotificationClick,
 }) {
   return (
     <Layout withStatusBar>
-      <HomeHeader hasNewNotification={hasNewNotification} />
+      <HomeHeader
+        hasNewNotification={hasNewNotification}
+        onNotificationClick={onNotificationClick}
+      />
       <Greeting>
         {userId}님, 반가워요.
         <br />

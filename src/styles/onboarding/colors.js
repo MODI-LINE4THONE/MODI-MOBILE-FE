@@ -36,6 +36,7 @@ export const onboardingColors = {
 
   // 홈 상단 알림 종의 새 알림 점
   notificationDot: '#2456E8',
+  bellPressed: '#DEE1E9', // 종을 누르는 동안 뒤에 보이는 원 (다른 누름 효과와 같은 색)
 
   // 가족 홈: 가족 프로필 카드
   familyStatusRegistered: '#2456E8', // "등록 완료"
@@ -43,6 +44,21 @@ export const onboardingColors = {
   tagBackground: '#FFFFFF',
   tagText: '#2456E8',
   tagShadow: 'rgba(36, 86, 232, 0.25)', // #2456E8, 투명도 25% (안쪽 그림자 테두리)
+
+  // 알림 화면: 바로가기 버튼 (경고 = "분실 신고하기", 기본 = "키오스크 연습하기")
+  shortcutBackground: '#FFFFFF',
+  shortcutPressed: '#DEE1E9',
+  shortcutWarningText: '#B54708',
+  shortcutWarningShadow: 'rgba(181, 71, 8, 0.25)', // #B54708, 투명도 25% (안쪽 그림자 테두리)
+  shortcutPrimaryText: '#2456E8',
+  shortcutPrimaryShadow: 'rgba(36, 86, 232, 0.25)', // #2456E8, 투명도 25% (안쪽 그림자 테두리)
+
+  // 가족 알림: 가족별 필터 칩
+  filterChipBackground: '#F4F6FA',
+  filterChipText: '#5B6575',
+  filterChipPressed: '#DEE1E9',
+  filterChipSelectedBackground: '#2456E8',
+  filterChipSelectedText: '#FFFFFF',
 
   // 상태 표시줄
   statusBarTime: '#333333',
