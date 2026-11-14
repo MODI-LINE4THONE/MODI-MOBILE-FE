@@ -49,3 +49,28 @@ npm run dev
 - 04~08은 로그인한 뒤에 보는 화면이라, 로그인 아이디가 없으면(새로고침, 주소 직접 입력) 02 로그인으로 이동합니다.
 - 08은 07에서 입력한 코드와 시각이 없으면 07로 이동합니다.
 - 배포할 때는 서버가 모든 주소에 `index.html`을 돌려주도록(SPA fallback) 설정해야 `/onboarding/start` 같은 주소에서 새로고침해도 화면이 열립니다.
+
+## 홈 화면 주소
+
+홈은 온보딩이 아니어서 `/onboarding` 밖에 둡니다. 화면 연결은 `src/app/HomeFlow.jsx`에 있습니다.
+
+| 화면 | 주소 | 파일 |
+| --- | --- | --- |
+| 09 본인 홈 | `/home` (05에서 "본인") | `pages/home/SelfHomePage.jsx` |
+| 09 가족 홈 | `/home` (05에서 "가족 · 보호 대상자") | `pages/home/FamilyHomePage.jsx` |
+
+- 홈도 로그인한 뒤에 보는 화면이라, 로그인 아이디가 없으면(새로고침, 주소 직접 입력) 02 로그인으로 이동합니다.
+- 05 선택이 없으면 본인 홈을 보여 줍니다. 인사말 아이디는 로그인 아이디입니다.
+- 08 "홈으로 이동"을 누르면 홈으로 가고, 홈에서 뒤로가기를 누르면 08로 돌아가지 않고 앱을 벗어납니다.
+- 로그인 아이디와 05 선택은 `src/app/SessionContext.jsx`에 메모리로만 보관합니다(온보딩과 홈이 함께 사용).
+- 가족 목록은 `src/features/family/familyProfiles.js`의 예시 데이터입니다. 서버 API가 생기면 `HomeFlow.jsx`에서 받아 넘깁니다.
+
+### 개발용 확인 주소 (`npm run dev`에서만)
+
+로그인 없이 홈을 바로 볼 수 있습니다. 배포용 빌드(`npm run build`)에서는 이 값이 무시되고 로그인 확인 규칙이 그대로 적용됩니다.
+
+| 주소 | 화면 |
+| --- | --- |
+| `/home?preview=self` | 본인 홈 |
+| `/home?preview=family` | 가족 홈 |
+| `/home?notice=new` | 새 알림 점 표시 (`preview`와 함께 사용 가능, 예: `/home?preview=family&notice=new`) |
