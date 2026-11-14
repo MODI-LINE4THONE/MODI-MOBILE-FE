@@ -57,6 +57,9 @@ npm run dev
 | 화면 | 주소 | 파일 |
 | --- | --- | --- |
 | 09 본인 홈 | `/home` | `pages/home/SelfHomePage.jsx` |
+| 09 가족 홈 | `/home?preview=family` (확인용) | `pages/home/FamilyHomePage.jsx` |
 
 - `/home?notice=new`로 열면 알림 아이콘에 새 알림 점이 보입니다. 기본값은 점 없음입니다(확인용).
-- 가족 홈, 05 선택에 따른 홈 나누기, 08 "홈으로 이동" 연결은 다음 작업에서 추가합니다.
+- 두 값은 함께 쓸 수 있습니다. 예: `/home?preview=family&notice=new`
+- 가족 목록은 `src/features/family/familyProfiles.js`의 예시 데이터입니다. 서버 API가 생기면 `HomeFlow.jsx`에서 받아 넘깁니다.
+- 05 선택에 따른 홈 나누기, 08 "홈으로 이동" 연결은 다음 작업에서 추가합니다.

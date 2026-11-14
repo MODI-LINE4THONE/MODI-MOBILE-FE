@@ -37,6 +37,13 @@ export const onboardingColors = {
   // 홈 상단 알림 종의 새 알림 점
   notificationDot: '#2456E8',
 
+  // 가족 홈: 가족 프로필 카드
+  familyStatusRegistered: '#2456E8', // "등록 완료"
+  familyStatusPending: '#5B6575', // "등록 대기"
+  tagBackground: '#FFFFFF',
+  tagText: '#2456E8',
+  tagShadow: 'rgba(36, 86, 232, 0.25)', // #2456E8, 투명도 25% (안쪽 그림자 테두리)
+
   // 상태 표시줄
   statusBarTime: '#333333',
   statusBarIcon: '#000000',
