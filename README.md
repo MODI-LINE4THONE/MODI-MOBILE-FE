@@ -74,3 +74,22 @@ npm run dev
 | `/home?preview=self` | 본인 홈 |
 | `/home?preview=family` | 가족 홈 |
 | `/home?notice=new` | 새 알림 점 표시 (`preview`와 함께 사용 가능, 예: `/home?preview=family&notice=new`) |
+
+## 알림 화면 주소
+
+알림도 `/onboarding` 밖에 둡니다. 화면 연결은 `src/app/NotificationFlow.jsx`에 있습니다.
+
+| 화면 | 주소 | 파일 |
+| --- | --- | --- |
+| 10 본인 알림 | `/notifications` | `pages/notification/SelfNotificationPage.jsx` |
+
+- 알림도 로그인한 뒤에 보는 화면이라, 로그인 아이디가 없으면(새로고침, 주소 직접 입력) 02 로그인으로 이동합니다.
+- 뒤로가기 화살표를 누르면 홈(`/home`)으로 갑니다.
+- 알림 목록은 `src/features/notification/notifications.js`의 예시 데이터입니다. "오늘/이전 알림" 묶음과 시간 표시("방금 전", "오전 9:12", "어제", "11월 10일")는 알림 시각으로 계산합니다(`notificationTime.js`). 서버 API가 생기면 `NotificationFlow.jsx`에서 받은 목록과 현재 시각을 넘깁니다.
+- 시간 계산 확인: `node --test src/features/notification/*.test.js`
+
+### 개발용 확인 주소 (`npm run dev`에서만)
+
+| 주소 | 화면 |
+| --- | --- |
+| `/notifications?preview=self` | 로그인 없이 본인 알림 (뒤로가기 → `/home?preview=self`) |

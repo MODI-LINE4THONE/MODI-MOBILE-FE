@@ -44,6 +44,14 @@ export const onboardingColors = {
   tagText: '#2456E8',
   tagShadow: 'rgba(36, 86, 232, 0.25)', // #2456E8, 투명도 25% (안쪽 그림자 테두리)
 
+  // 알림 화면: 바로가기 버튼 (경고 = "분실 신고하기", 기본 = "키오스크 연습하기")
+  shortcutBackground: '#FFFFFF',
+  shortcutPressed: '#DEE1E9',
+  shortcutWarningText: '#B54708',
+  shortcutWarningShadow: 'rgba(181, 71, 8, 0.25)', // #B54708, 투명도 25% (안쪽 그림자 테두리)
+  shortcutPrimaryText: '#2456E8',
+  shortcutPrimaryShadow: 'rgba(36, 86, 232, 0.25)', // #2456E8, 투명도 25% (안쪽 그림자 테두리)
+
   // 상태 표시줄
   statusBarTime: '#333333',
   statusBarIcon: '#000000',
