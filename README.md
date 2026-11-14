@@ -66,6 +66,7 @@ npm run dev
 - 가족 목록은 `src/features/family/familyProfiles.js`의 예시 데이터입니다. 서버 API가 생기면 `HomeFlow.jsx`에서 받아 넘깁니다.
 - 오른쪽 위 알림 종을 누르면 알림 화면(`/notifications`)으로 갑니다. 누르는 영역은 44×44이고, 누르는 동안 종 뒤에 연회색 원이 보인 뒤 0.15초 후 이동합니다.
 - 새 알림 점은 `src/app/NotificationContext.jsx`가 판단합니다(아래 "새 알림 점").
+- 본인 홈의 "키링 관리" 카드를 누르면 키링 관리 화면(`/keyrings`)으로 갑니다(아래 "키링 관리 화면 주소").
 
 ### 개발용 확인 주소 (`npm run dev`에서만)
 
@@ -78,6 +79,7 @@ npm run dev
 | `/home?notice=new` | 본인 홈 (`preview`와 함께 사용 가능, 예: `/home?preview=family&notice=new`). 점은 실제와 같은 규칙으로, 알림 화면을 보기 전까지 보입니다 |
 
 - 개발용 주소로 들어온 홈에서 종을 누르면 알림 화면도 같은 대상으로 열립니다(`/notifications?preview=self|family`). 돌아오면 들어올 때와 같은 홈 주소입니다.
+- 개발용 주소로 들어온 본인 홈에서 "키링 관리"를 누르면 `/keyrings?preview=self`로 열립니다.
 - 점이 없는 홈(`09-home-*-read.png`)은 알림 화면을 한 번 열었다가 돌아오면 볼 수 있습니다. 새로고침하면 다시 "본 적 없음"이 됩니다.
 
 ## 알림 화면 주소
@@ -132,3 +134,31 @@ node --test src/features/notification/*.test.js
 | --- | --- |
 | `/notifications?preview=self` | 본인 알림 (직접 들어왔을 때 화살표 → `/home?preview=self`) |
 | `/notifications?preview=family` | 가족 알림 (직접 들어왔을 때 화살표 → `/home?preview=family`) |
+
+## 키링 관리 화면 주소
+
+키링 관리도 `/onboarding` 밖에 둡니다. 화면 연결은 `src/app/KeyringFlow.jsx`에 있습니다.
+
+| 화면 | 주소 | 파일 |
+| --- | --- | --- |
+| 11 본인 키링 관리 | `/keyrings` | `pages/keyring/SelfKeyringPage.jsx` |
+| 새 키링 발급 (팀원 화면, #6) | `/keyrings/issuance` | `pages/KeyringIssuancePage.jsx` |
+| 키링 분실 (팀원 화면, #4) | `/keyrings/lost` | `pages/KeyringLostPage.jsx` |
+
+- 키링 관리도 로그인한 뒤에 보는 화면이라, 로그인 아이디가 없으면(새로고침, 주소 직접 입력) 02 로그인으로 이동합니다.
+- 제목 아이디는 로그인 아이디입니다.
+- 키링 ID와 등록 일시는 07에서 입력한 코드와 "다음"을 누른 시각입니다. `src/app/SessionContext.jsx`의 `keyring`에 메모리로만 보관합니다(08과 키링 관리가 함께 사용).
+  - 본인 사용자일 때만 07 정보를 보여 줍니다. 07 정보가 없거나 05에서 "가족 · 보호 대상자"를 골랐으면 08과 같은 기본값(AB1234, 2026년 11월 3일 15시 29분)을 보여 줍니다.
+- 키링 정보 카드는 08과 같은 부품(`components/keyring/KeyringInfoCard.jsx`)입니다. 크기만 다릅니다(08: 높이 171, 원 115 / 키링 관리: 높이 176, 원 120).
+- "새 키링 연결하기"를 누르면 새 키링 발급 화면으로, "키링을 분실하셨나요?"를 누르면 키링 분실 화면으로 갑니다. 두 화면에서 뒤로 가면 키링 관리로 돌아옵니다.
+- 뒤로가기
+  - 홈에서 "키링 관리" 카드를 눌러 왔으면: 화살표와 휴대폰·브라우저 뒤로가기 모두 홈으로 돌아갑니다(한 칸 뒤로). 홈에서 다시 뒤로가기를 누르면 앱을 벗어납니다.
+  - 주소를 직접 입력해 들어왔으면: 화살표는 홈으로 가며 기록을 바꿉니다(replace). 홈에서 뒤로가기를 누르면 앱을 벗어납니다.
+
+### 개발용 확인 주소 (`npm run dev`에서만)
+
+로그인 없이 키링 관리 화면을 바로 볼 수 있습니다. 배포용 빌드에서는 무시되고 로그인 확인 규칙이 그대로 적용됩니다.
+
+| 주소 | 화면 |
+| --- | --- |
+| `/keyrings?preview=self` | 본인 키링 관리, 기본값 표시 (직접 들어왔을 때 화살표 → `/home?preview=self`) |

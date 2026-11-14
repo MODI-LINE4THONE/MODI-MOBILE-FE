@@ -48,7 +48,7 @@ const Circle = styled.span`
   width: ${({ $size }) => $size}px;
   height: ${({ $size }) => $size}px;
   border-radius: 50%;
-  background: ${onboardingColors.iconCircle};
+  background: ${({ $color }) => $color};
 `
 
 // 시각 보정: 원 가운데보다 $offsetY px 위로
@@ -83,6 +83,7 @@ const PRESS_DELAY_MS = 150
 // - iconOffsetY: 아이콘을 원 가운데에서 위로 올리는 정도(px)
 // - bodyOffsetY: 글자 묶음을 카드 세로 가운데에서 아래로 옮기는 정도(px)
 // - radius: 카드 둥글기(px)
+// - circleColor: 아이콘 뒤 원 색 (기본: 연파랑. 'transparent'면 원 없이 아이콘만)
 // - onClick: 있으면 누를 수 있는 <button>, 없으면 보기만 하는 <div>
 export default function IconCard({
   icon,
@@ -92,6 +93,7 @@ export default function IconCard({
   height = 136,
   radius = 25,
   circleSize = 80,
+  circleColor = onboardingColors.iconCircle,
   paddingLeft = 27,
   gap = 23.81,
   onClick,
@@ -130,7 +132,7 @@ export default function IconCard({
       $paddingLeft={paddingLeft}
       $gap={gap}
     >
-      <Circle $size={circleSize}>
+      <Circle $size={circleSize} $color={circleColor}>
         <Icon src={icon} alt="" $width={iconWidth} $offsetY={iconOffsetY} />
       </Circle>
       <Body as={clickable ? 'span' : 'div'} $offsetY={bodyOffsetY}>
