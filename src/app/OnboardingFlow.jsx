@@ -9,6 +9,9 @@ import ProfileSetupPage from '../pages/onboarding/ProfileSetupPage'
 import NfcGuidePage from '../pages/onboarding/NfcGuidePage'
 import NfcCodePage from '../pages/onboarding/NfcCodePage'
 import NfcCompletePage from '../pages/onboarding/NfcCompletePage'
+import RequireLogin from './RequireLogin'
+import { useSession } from './SessionContext'
+import { HOME_PATH, LOGIN_PATH } from './paths'
 
 // ─────────────────────────────────────────────────────────────
 // 온보딩 화면 01~08 연결 (react-router)
@@ -23,14 +26,17 @@ import NfcCompletePage from '../pages/onboarding/NfcCompletePage'
 //   01 → 02, 02 → 04: replace (기록에 남기지 않음 → 02·04에서 뒤로가기 = 앱을 벗어남)
 //   02 → 03, 04 → 05·06: push (뒤로가기 = 02 또는 04)
 //   05·06·07·08 사이 이동: replace (기록은 항상 [04, 지금 화면] → 뒤로가기 = 04)
+//   08 → 홈: 한 칸 뒤로(04) 간 뒤 그 칸을 홈으로 replace (기록 [홈] → 홈에서 뒤로가기 = 앱을 벗어남)
 // 그래서 휴대폰·브라우저 뒤로가기가 화면의 뒤로가기 화살표와 같은 곳으로 간다.
+//
+// 로그인 아이디와 05 선택은 앱 전체 정보(SessionContext)에 있다. (홈에서도 쓰기 때문)
 // ─────────────────────────────────────────────────────────────
 
 // path: 주소 / back: 뒤로가기 화살표 + 휴대폰·브라우저 뒤로가기를 누르면 갈 화면 (null: 화살표 없음 → 앱을 벗어남)
 // needsLogin: 로그인 아이디가 없으면(새로고침, 주소 직접 입력) 02 로그인으로 보낸다
 const SCREENS = {
   splash: { path: '/onboarding', title: 'MODI', back: null }, // 01
-  login: { path: '/onboarding/login', title: '로그인', back: null }, // 02
+  login: { path: LOGIN_PATH, title: '로그인', back: null }, // 02
   signup: { path: '/onboarding/signup', title: '회원가입', back: 'login' }, // 03
   start: { path: '/onboarding/start', title: '시작하기', back: null, needsLogin: true }, // 04
   profile: { path: '/onboarding/profile', title: '접근성 프로필 설정', back: 'start', needsLogin: true }, // 05
@@ -49,13 +55,13 @@ const ScreenFocus = styled.div`
   outline: none;
 `
 
-// 온보딩 화면 전체를 감싸는 틀: 화면 사이에 넘기는 정보 + 화면이 바뀔 때 할 일
+// 온보딩 화면 전체를 감싸는 틀: 온보딩 화면 사이에 넘기는 정보 + 화면이 바뀔 때 할 일
 function OnboardingFlow() {
-  // 화면 사이에 넘기는 정보 (메모리에만 보관 → 새로고침하면 사라짐)
-  const [userId, setUserId] = useState(null) // 02 로그인 아이디 → 04 인사말
-  const [profile, setProfile] = useState({ target: null, nickname: '' }) // 05 선택 기억
+  // 온보딩 화면 사이에 넘기는 정보 (메모리에만 보관 → 새로고침하면 사라짐)
+  // 로그인 아이디·05 선택은 앱 전체 정보(useSession)에 있다.
   const [nfcGuideFrom, setNfcGuideFrom] = useState('start') // 06에 들어온 화면 ('start' | 'profile')
   const [nfcResult, setNfcResult] = useState(null) // 07 → 08 { keyringId, registeredAt }
+  const [goingHome, setGoingHome] = useState(false) // 08 "홈으로 이동": 04로 돌아간 뒤 홈으로 바꾸는 중
 
   // 화면이 바뀌면: 탭 제목 변경, 맨 위로 스크롤, 화면 읽기 프로그램이 새 화면 처음부터 읽도록 포커스 이동
   const { pathname } = useLocation()
@@ -74,14 +80,16 @@ function OnboardingFlow() {
   }, [pathname])
 
   const flow = {
-    userId,
-    setUserId,
-    profile,
-    setProfile,
     nfcGuideFrom,
     setNfcGuideFrom,
     nfcResult,
     setNfcResult,
+    setGoingHome,
+  }
+
+  // 08 "홈으로 이동": 한 칸 뒤로 간 칸(04)에 도착하면 화면을 그리지 않고 그 칸을 홈으로 바꾼다
+  if (goingHome && findScreenByPath(pathname) !== SCREENS.nfcComplete) {
+    return <Navigate to={HOME_PATH} replace />
   }
 
   return (
@@ -89,13 +97,6 @@ function OnboardingFlow() {
       <Outlet context={flow} />
     </ScreenFocus>
   )
-}
-
-// 04~08 공통: 로그인 아이디가 없으면 02 로그인으로
-function RequireLogin() {
-  const flow = useOutletContext()
-  if (!flow.userId) return <Navigate to={SCREENS.login.path} replace />
-  return <Outlet context={flow} />
 }
 
 // 화면 이동 도구
@@ -133,7 +134,7 @@ function SplashScreen() {
 
 // 02 로그인: "회원가입" → 03 / "로그인" → 04 (입력한 아이디를 04로, replace)
 function LoginScreen() {
-  const { setUserId } = useOutletContext()
+  const { setUserId } = useSession()
   const { go } = useScreenNav()
   return (
     <LoginPage
@@ -155,7 +156,8 @@ function SignupScreen() {
 
 // 04 시작: "접근성 프로필 설정" → 05 / "NFC 키링 등록" → 06
 function StartScreen() {
-  const { userId, setNfcGuideFrom } = useOutletContext()
+  const { userId } = useSession()
+  const { setNfcGuideFrom } = useOutletContext()
   const { go } = useScreenNav()
   return (
     <StartPage
@@ -171,7 +173,8 @@ function StartScreen() {
 
 // 05 접근성 프로필 설정: 화살표 → 04 / "다음" → 06 / "이전으로" → 04
 function ProfileScreen() {
-  const { profile, setProfile, setNfcGuideFrom } = useOutletContext()
+  const { profile, setProfile } = useSession()
+  const { setNfcGuideFrom } = useOutletContext()
   const { go, goBackTo } = useScreenNav()
   const toStart = () => goBackTo('start')
   return (
@@ -221,16 +224,28 @@ function NfcCodeScreen() {
 }
 
 // 08 등록 완료: 코드와 시각이 없으면(새로고침 등) → 07 / 화살표 → 04
-// "홈으로 이동"은 아직 동작 없음 (실제 홈 화면이 생기면 onHome 연결)
+// "홈으로 이동" → 홈. 기록 [04, 08]에서 한 칸 뒤로(04) 간 뒤 04가 그 칸을 홈으로 replace → 기록 [홈]
+//   (앱 안의 이전 기록이 없으면 바로 홈으로 replace)
 function NfcCompleteScreen() {
-  const { nfcResult } = useOutletContext()
+  const { nfcResult, setGoingHome } = useOutletContext()
   const { goBackTo } = useScreenNav()
+  const navigate = useNavigate()
+  const hasPrevious = useLocation().key !== 'default'
   if (!nfcResult) return <Navigate to={SCREENS.nfcCode.path} replace />
+  const goHome = () => {
+    if (!hasPrevious) {
+      navigate(HOME_PATH, { replace: true })
+      return
+    }
+    setGoingHome(true)
+    navigate(-1)
+  }
   return (
     <NfcCompletePage
       keyringId={nfcResult.keyringId}
       registeredAt={nfcResult.registeredAt}
       onBack={() => goBackTo('start')}
+      onHome={goHome}
     />
   )
 }
