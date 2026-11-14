@@ -32,7 +32,7 @@ import { HOME_PATH, KEYRING_ISSUANCE_PATH, KEYRING_LOST_PATH, KEYRING_PATH } fro
 // - 가족 이름·사진·키링 정보: 가족 목록(sampleFamilyProfiles, 가족 홈과 같은 목록)에서 :familyId로 찾는다
 // - 없는 familyId이거나 키링이 없는(등록 대기) 가족이면 홈으로 replace
 // - 뒤로가기 화살표
-//   앱 안에서 왔으면: 한 칸 뒤로 (휴대폰 뒤로가기와 같은 결과. 다음 이슈에서 가족 프로필 상세와 연결하면 그 화면)
+//   앱 안에서 왔으면: 한 칸 뒤로 (휴대폰 뒤로가기와 같은 결과. 가족 프로필 상세에서 왔으면 그 화면)
 //   주소를 직접 입력해 들어왔으면: 홈으로 replace
 // - 05 선택과 상관없이 열린다 (본인 사용자도 막지 않음. 가족 목록이 지금은 예시 데이터라서)
 //

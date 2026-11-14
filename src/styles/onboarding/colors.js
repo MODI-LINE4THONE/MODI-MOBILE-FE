@@ -45,6 +45,12 @@ export const onboardingColors = {
   tagText: '#2456E8',
   tagShadow: 'rgba(36, 86, 232, 0.25)', // #2456E8, 투명도 25% (안쪽 그림자 테두리)
 
+  // 가족 프로필 상세: 등록된 키링 카드 (카드 배경·누름은 cardBackground·cardPressed)
+  familyProfileDivider: '#DEE1E9', // 구분선. 누르면 카드 배경과 같은 색이 되어 보이지 않는다
+  keyringBadgeBackground: '#FFFFFF', // "사용 중" 표시
+  keyringBadgeText: '#0F7B4F',
+  keyringBadgeShadow: 'rgba(15, 123, 79, 0.25)', // #0F7B4F, 투명도 25% (안쪽 그림자 테두리)
+
   // 알림 화면: 바로가기 버튼 (경고 = "분실 신고하기", 기본 = "키오스크 연습하기")
   shortcutBackground: '#FFFFFF',
   shortcutPressed: '#DEE1E9',
