@@ -1,7 +1,8 @@
 // ─────────────────────────────────────────────────────────────
 // 알림 목록 데이터
 //
-// 지금은 예시 데이터. 서버 API가 생기면 NotificationFlow에서 sampleSelfNotifications 대신
+// 지금은 예시 데이터. 서버 API가 생기면 NotificationFlow에서 sampleSelfNotifications(본인),
+// sampleFamilyNotifications(가족) 대신
 // 서버에서 받은 목록을, SAMPLE_NOW 대신 실제 현재 시각(new Date())을 화면에 넘기면 된다.
 // ("오늘/이전 알림" 묶음과 "방금 전 / 오전 9:12 / 어제 / 11월 10일" 표시는 createdAt으로 계산한다:
 //  notificationTime.js)
@@ -69,6 +70,52 @@ export const sampleSelfNotifications = [
     icon: NOTIFICATION_ICON.person,
     title: '접근성 설정이 바뀌었어요.',
     description: '“색상 고대비”를 켰어요.\n다음 키오스크부터 바로 적용돼요.',
+    createdAt: '2026-11-10T14:40',
+  },
+]
+
+// 가족 알림 예시 (최신순). familyId는 features/family/familyProfiles.js의 id
+export const sampleFamilyNotifications = [
+  {
+    id: 'family-mother-keyring-used',
+    familyId: 'mother',
+    icon: NOTIFICATION_ICON.keyring,
+    title: '키링을 사용했어요.',
+    description: '어머니가 모디카페 강남점에서\n키링을 태그했어요.',
+    createdAt: '2026-11-14T09:30',
+  },
+  {
+    id: 'family-mother-keyring-check',
+    familyId: 'mother',
+    icon: NOTIFICATION_ICON.warning,
+    title: '키링 사용을 확인해 주세요.',
+    description: '평소와 다른 매장에서 어머니의 키링이\n태그됐어요. 확인 후 분실 신고를 해주세요.',
+    createdAt: '2026-11-14T09:12',
+    action: { label: '분실 신고하기', tone: ACTION_TONE.warning },
+  },
+  {
+    id: 'family-grandmother-keyring-pending',
+    familyId: 'grandmother',
+    icon: NOTIFICATION_ICON.keyring,
+    title: '키링 연결이 남았어요.',
+    description: '할머니의 프로필이 만들어졌어요.\n키링을 연결하면 바로 쓸 수 있어요.',
+    createdAt: '2026-11-14T08:30',
+    action: { label: '키링 연결하기', tone: ACTION_TONE.primary },
+  },
+  {
+    id: 'family-mother-practice-done',
+    familyId: 'mother',
+    icon: NOTIFICATION_ICON.kiosk,
+    title: '주문 연습을 마쳤어요.',
+    description: '어머니가 “화면 하단 조작”이 켜진 화면으로\n키오스크 주문을 연습했어요.',
+    createdAt: '2026-11-10T15:00',
+  },
+  {
+    id: 'family-mother-setting-bottom',
+    familyId: 'mother',
+    icon: NOTIFICATION_ICON.person,
+    title: '접근성 설정이 바뀌었어요.',
+    description: '어머니가 “화면 하단 조작”을 켰어요.\n다음 키오스크부터 바로 적용돼요.',
     createdAt: '2026-11-10T14:40',
   },
 ]

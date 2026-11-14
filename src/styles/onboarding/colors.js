@@ -52,6 +52,13 @@ export const onboardingColors = {
   shortcutPrimaryText: '#2456E8',
   shortcutPrimaryShadow: 'rgba(36, 86, 232, 0.25)', // #2456E8, 투명도 25% (안쪽 그림자 테두리)
 
+  // 가족 알림: 가족별 필터 칩
+  filterChipBackground: '#F4F6FA',
+  filterChipText: '#5B6575',
+  filterChipPressed: '#DEE1E9',
+  filterChipSelectedBackground: '#2456E8',
+  filterChipSelectedText: '#FFFFFF',
+
   // 상태 표시줄
   statusBarTime: '#333333',
   statusBarIcon: '#000000',

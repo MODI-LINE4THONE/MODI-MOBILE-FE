@@ -10,7 +10,10 @@ const Content = styled.main`
   padding: 0 25px 40px;
 `
 
+const TODAY_EMPTY_MESSAGE = '오늘 받은 알림이 없어요.'
+
 // 본인 알림
+// 빈 묶음: "오늘"은 안내 문구, "이전 알림"은 숨김 (가족 알림과 같은 규칙)
 // notifications: 알림 목록 (features/notification/notifications.js 모양)
 // now: "오늘/이전 알림" 묶기와 시간 표시 기준 시각
 // onBack: 뒤로가기 화살표를 누르면 호출
@@ -32,6 +35,7 @@ export default function SelfNotificationPage({
           notifications={today}
           now={now}
           onActionClick={onActionClick}
+          emptyMessage={TODAY_EMPTY_MESSAGE}
         />
         <NotificationSection
           title="이전 알림"
