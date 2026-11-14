@@ -57,16 +57,21 @@ const HOME_CARD_GAP = 12.5 // 원 끝(123) + 12.5 = 글자 상자 x 135.5
 // userId: 인사말에 보일 아이디 (로그인할 때 입력한 아이디)
 // hasNewNotification: 새 알림이 있으면 종 아이콘에 파란 점
 // onSettingsClick / onPracticeClick / onKeyringClick: 각 카드를 누르면 호출 (없으면 동작 없음)
+// onNotificationClick: 알림 종을 누르면 호출 (없으면 누름 효과만)
 export default function SelfHomePage({
   userId = 'user01',
   hasNewNotification = false,
   onSettingsClick,
   onPracticeClick,
   onKeyringClick,
+  onNotificationClick,
 }) {
   return (
     <OnboardingLayout withStatusBar>
-      <HomeHeader hasNewNotification={hasNewNotification} />
+      <HomeHeader
+        hasNewNotification={hasNewNotification}
+        onNotificationClick={onNotificationClick}
+      />
       <Content>
         <Greeting>
           {userId}님, 반가워요.

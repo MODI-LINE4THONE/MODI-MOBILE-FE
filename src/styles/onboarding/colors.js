@@ -36,6 +36,7 @@ export const onboardingColors = {
 
   // 홈 상단 알림 종의 새 알림 점
   notificationDot: '#2456E8',
+  bellPressed: '#DEE1E9', // 종을 누르는 동안 뒤에 보이는 원 (다른 누름 효과와 같은 색)
 
   // 가족 홈: 가족 프로필 카드
   familyStatusRegistered: '#2456E8', // "등록 완료"
