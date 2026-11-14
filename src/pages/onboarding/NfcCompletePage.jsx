@@ -2,18 +2,11 @@ import styled from 'styled-components'
 import OnboardingLayout from '../../components/onboarding/OnboardingLayout'
 import OnboardingHeader from '../../components/onboarding/OnboardingHeader'
 import OnboardingFooter from '../../components/onboarding/OnboardingFooter'
-import IconCard from '../../components/onboarding/IconCard'
+import KeyringInfoCard, {
+  DEFAULT_KEYRING_ID,
+  DEFAULT_REGISTERED_AT,
+} from '../../components/keyring/KeyringInfoCard'
 import { onboardingColors } from '../../styles/onboarding/colors'
-import { formatKoreanDate, formatKoreanTime, toDateTimeAttribute } from '../../utils/formatDateTime'
-import keyringIcon from '../../assets/icons/icon-keyring.svg'
-
-// 08만 따로 열었을 때의 기본값
-const DEFAULT_KEYRING_ID = 'AB1234'
-const DEFAULT_REGISTERED_AT = new Date(2026, 10, 3, 15, 29)
-
-// 키링 아이콘: 파일(36x57) 안 그림은 35.23 x 56.05.
-// 그림 가로를 50.64로 맞추려면 이미지 상자 가로 = 36 x 50.64 / 35.23
-const KEYRING_ICON_WIDTH = (36 * 50.64) / 35.23
 
 const Content = styled.div`
   display: flex;
@@ -40,38 +33,12 @@ const Description = styled.p`
   line-height: 24px;
 `
 
-// 카드 y 270 (설명 끝 256 + 14)
-const ResultCard = styled(IconCard)`
+// 카드 y 270 (설명 끝 256 + 14). 카드 모양은 키링 관리와 같은 부품 (08 크기)
+const ResultCard = styled(KeyringInfoCard)`
   margin-top: 14px;
 `
 
-const InfoList = styled.dl`
-  margin: 0;
-`
-
-// 이름표: 17px Regular, 상자 높이 20
-const InfoLabel = styled.dt`
-  font-size: 17px;
-  font-weight: 400;
-  line-height: 20px;
-  color: ${onboardingColors.text};
-
-  /* "키링 ID" 묶음 → "등록 일시" 묶음 간격 */
-  & + dd + & {
-    margin-top: 10px;
-  }
-`
-
-// 값: 20px Bold, 줄 높이 25. 이름표와 간격 5
-const InfoValue = styled.dd`
-  margin: 5px 0 0;
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 25px;
-  color: ${onboardingColors.cardValue};
-`
-
-// keyringId: 07에서 입력한 코드 / registeredAt: 07에서 "다음"을 누른 시각(Date)
+// keyringId: 07에서 입력한 코드 (08만 따로 열었으면 기본값) / registeredAt: 07에서 "다음"을 누른 시각(Date)
 // onBack: 뒤로가기 화살표 / onHome: "홈으로 이동" (OnboardingFlow에서 홈으로 연결)
 export default function NfcCompletePage({
   keyringId = DEFAULT_KEYRING_ID,
@@ -85,30 +52,7 @@ export default function NfcCompletePage({
       <Content>
         <Title>등록 완료</Title>
         <Description>키링이 정상적으로 등록되었습니다.</Description>
-        <ResultCard
-          icon={keyringIcon}
-          iconWidth={KEYRING_ICON_WIDTH}
-          iconOffsetY={2.68}
-          bodyOffsetY={4}
-          height={171}
-          radius={30}
-          circleSize={115}
-          paddingLeft={25}
-          gap={26}
-        >
-          <InfoList>
-            <InfoLabel>키링 ID</InfoLabel>
-            <InfoValue>{keyringId}</InfoValue>
-            <InfoLabel>등록 일시</InfoLabel>
-            <InfoValue>
-              <time dateTime={toDateTimeAttribute(registeredAt)}>
-                {formatKoreanDate(registeredAt)}
-                <br />
-                {formatKoreanTime(registeredAt)}
-              </time>
-            </InfoValue>
-          </InfoList>
-        </ResultCard>
+        <ResultCard keyringId={keyringId} registeredAt={registeredAt} size="complete" />
         <OnboardingFooter
           primaryLabel="홈으로 이동"
           onPrimaryClick={onHome}

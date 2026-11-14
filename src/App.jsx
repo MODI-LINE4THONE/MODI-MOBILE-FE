@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate, RouterProvider } from 'react-router'
 import { onboardingRoutes } from './app/OnboardingFlow.jsx'
 import { homeRoutes } from './app/HomeFlow.jsx'
 import { notificationRoutes } from './app/NotificationFlow.jsx'
+import { keyringRoutes } from './app/KeyringFlow.jsx'
 import { SessionProvider } from './app/SessionContext.jsx'
 import { NotificationProvider } from './app/NotificationContext.jsx'
 import AccessibilitySettingsPage from './pages/AccessibilitySettingsPage.jsx'
@@ -14,6 +15,7 @@ const router = createBrowserRouter([
   onboardingRoutes, // /onboarding/... (온보딩 01~08)
   homeRoutes, // /home (홈)
   notificationRoutes, // /notifications (알림)
+  keyringRoutes, // /keyrings (키링 관리)
   { path: '/accessibility', element: <AccessibilitySettingsPage /> },
   { path: '/keyrings/lost', element: <KeyringLostPage /> },
   { path: '/keyrings/issuance', element: <KeyringIssuancePage /> },

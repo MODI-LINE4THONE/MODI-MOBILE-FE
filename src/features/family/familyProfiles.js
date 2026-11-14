@@ -15,6 +15,8 @@ import grandfatherAvatar from '../../assets/images/avatar-grandfather.png'
 //   status: FAMILY_STATUS 중 하나 ("등록 완료" / "등록 대기" 글자와 색은 카드가 정한다)
 //   lastUsedText: 등록 완료일 때 안내 문구 (등록 대기는 카드가 "키링을 연결해 주세요." 표시)
 //   enabledSettings: 켜진 접근성 설정 이름 목록 (없으면 태그 줄을 그리지 않는다)
+//   keyring: 연결된 키링 { keyringId, registeredAt(Date) }. 등록 대기(키링 연결 전)는 null
+//     → 가족 키링 관리(/keyrings/family/:id)에서 사용. 가족 홈 카드는 쓰지 않는다.
 // ─────────────────────────────────────────────────────────────
 
 export const FAMILY_STATUS = {
@@ -30,17 +32,20 @@ export const sampleFamilyProfiles = [
     status: FAMILY_STATUS.registered,
     lastUsedText: '어제 키오스크에서 사용했어요.',
     enabledSettings: ['큰 글씨', '색상 고대비', '터치 위치 안내', '화면 하단 조작'],
+    keyring: { keyringId: 'AB1234', registeredAt: new Date(2026, 10, 3, 15, 29) },
   },
   {
     id: 'grandmother',
     name: '할머니',
     avatar: grandmotherAvatar,
     status: FAMILY_STATUS.pending,
+    keyring: null,
   },
   {
     id: 'grandfather',
     name: '할아버지',
     avatar: grandfatherAvatar,
     status: FAMILY_STATUS.pending,
+    keyring: null,
   },
 ]

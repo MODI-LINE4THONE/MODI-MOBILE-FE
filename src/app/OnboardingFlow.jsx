@@ -29,7 +29,7 @@ import { HOME_PATH, LOGIN_PATH } from './paths'
 //   08 → 홈: 한 칸 뒤로(04) 간 뒤 그 칸을 홈으로 replace (기록 [홈] → 홈에서 뒤로가기 = 앱을 벗어남)
 // 그래서 휴대폰·브라우저 뒤로가기가 화면의 뒤로가기 화살표와 같은 곳으로 간다.
 //
-// 로그인 아이디와 05 선택은 앱 전체 정보(SessionContext)에 있다. (홈에서도 쓰기 때문)
+// 로그인 아이디, 05 선택, 07에서 등록한 키링은 앱 전체 정보(SessionContext)에 있다. (홈·키링 관리에서도 쓰기 때문)
 // ─────────────────────────────────────────────────────────────
 
 // path: 주소 / back: 뒤로가기 화살표 + 휴대폰·브라우저 뒤로가기를 누르면 갈 화면 (null: 화살표 없음 → 앱을 벗어남)
@@ -58,9 +58,8 @@ const ScreenFocus = styled.div`
 // 온보딩 화면 전체를 감싸는 틀: 온보딩 화면 사이에 넘기는 정보 + 화면이 바뀔 때 할 일
 function OnboardingFlow() {
   // 온보딩 화면 사이에 넘기는 정보 (메모리에만 보관 → 새로고침하면 사라짐)
-  // 로그인 아이디·05 선택은 앱 전체 정보(useSession)에 있다.
+  // 로그인 아이디·05 선택·07 키링은 앱 전체 정보(useSession)에 있다.
   const [nfcGuideFrom, setNfcGuideFrom] = useState('start') // 06에 들어온 화면 ('start' | 'profile')
-  const [nfcResult, setNfcResult] = useState(null) // 07 → 08 { keyringId, registeredAt }
   const [goingHome, setGoingHome] = useState(false) // 08 "홈으로 이동": 04로 돌아간 뒤 홈으로 바꾸는 중
 
   // 화면이 바뀌면: 탭 제목 변경, 맨 위로 스크롤, 화면 읽기 프로그램이 새 화면 처음부터 읽도록 포커스 이동
@@ -82,8 +81,6 @@ function OnboardingFlow() {
   const flow = {
     nfcGuideFrom,
     setNfcGuideFrom,
-    nfcResult,
-    setNfcResult,
     setGoingHome,
   }
 
@@ -207,15 +204,15 @@ function NfcGuideScreen() {
   )
 }
 
-// 07 등록 코드: 화살표 → 04 / "다음" → 08 (코드와 누른 시각을 08로) / "이전으로" → 06
+// 07 등록 코드: 화살표 → 04 / "다음" → 08 (코드와 누른 시각을 앱 전체 정보에 저장) / "이전으로" → 06
 function NfcCodeScreen() {
-  const { setNfcResult } = useOutletContext()
+  const { setKeyring } = useSession()
   const { go, goBackTo } = useScreenNav()
   return (
     <NfcCodePage
       onBack={() => goBackTo('start')}
       onNext={({ code, registeredAt }) => {
-        setNfcResult({ keyringId: code, registeredAt })
+        setKeyring({ keyringId: code, registeredAt })
         go('nfcComplete', { replace: true })
       }}
       onPrevious={() => go('nfcGuide', { replace: true })}
@@ -227,11 +224,12 @@ function NfcCodeScreen() {
 // "홈으로 이동" → 홈. 기록 [04, 08]에서 한 칸 뒤로(04) 간 뒤 04가 그 칸을 홈으로 replace → 기록 [홈]
 //   (앱 안의 이전 기록이 없으면 바로 홈으로 replace)
 function NfcCompleteScreen() {
-  const { nfcResult, setGoingHome } = useOutletContext()
+  const { keyring } = useSession()
+  const { setGoingHome } = useOutletContext()
   const { goBackTo } = useScreenNav()
   const navigate = useNavigate()
   const hasPrevious = useLocation().key !== 'default'
-  if (!nfcResult) return <Navigate to={SCREENS.nfcCode.path} replace />
+  if (!keyring) return <Navigate to={SCREENS.nfcCode.path} replace />
   const goHome = () => {
     if (!hasPrevious) {
       navigate(HOME_PATH, { replace: true })
@@ -242,8 +240,8 @@ function NfcCompleteScreen() {
   }
   return (
     <NfcCompletePage
-      keyringId={nfcResult.keyringId}
-      registeredAt={nfcResult.registeredAt}
+      keyringId={keyring.keyringId}
+      registeredAt={keyring.registeredAt}
       onBack={() => goBackTo('start')}
       onHome={goHome}
     />
