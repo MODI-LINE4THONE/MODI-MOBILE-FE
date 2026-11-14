@@ -142,6 +142,7 @@ node --test src/features/notification/*.test.js
 | 화면 | 주소 | 파일 |
 | --- | --- | --- |
 | 11 본인 키링 관리 | `/keyrings` | `pages/keyring/SelfKeyringPage.jsx` |
+| 11 가족 키링 관리 | `/keyrings/family/:familyId` (예: `/keyrings/family/mother`) | `pages/keyring/FamilyKeyringPage.jsx` |
 | 새 키링 발급 (팀원 화면, #6) | `/keyrings/issuance` | `pages/KeyringIssuancePage.jsx` |
 | 키링 분실 (팀원 화면, #4) | `/keyrings/lost` | `pages/KeyringLostPage.jsx` |
 
@@ -150,10 +151,27 @@ node --test src/features/notification/*.test.js
 - 키링 ID와 등록 일시는 07에서 입력한 코드와 "다음"을 누른 시각입니다. `src/app/SessionContext.jsx`의 `keyring`에 메모리로만 보관합니다(08과 키링 관리가 함께 사용).
   - 본인 사용자일 때만 07 정보를 보여 줍니다. 07 정보가 없거나 05에서 "가족 · 보호 대상자"를 골랐으면 08과 같은 기본값(AB1234, 2026년 11월 3일 15시 29분)을 보여 줍니다.
 - 키링 정보 카드는 08과 같은 부품(`components/keyring/KeyringInfoCard.jsx`)입니다. 크기만 다릅니다(08: 높이 171, 원 115 / 키링 관리: 높이 176, 원 120).
+- 본인과 가족 키링 관리는 같은 틀(`components/keyring/KeyringManageLayout.jsx`)을 씁니다. 가족은 제목("어머니의 키링"), 정보 카드의 가족 사진(원 가운데, 가로 120.73), 키링 정보만 다릅니다.
 - "새 키링 연결하기"를 누르면 새 키링 발급 화면으로, "키링을 분실하셨나요?"를 누르면 키링 분실 화면으로 갑니다. 두 화면에서 뒤로 가면 키링 관리로 돌아옵니다.
 - 뒤로가기
   - 홈에서 "키링 관리" 카드를 눌러 왔으면: 화살표와 휴대폰·브라우저 뒤로가기 모두 홈으로 돌아갑니다(한 칸 뒤로). 홈에서 다시 뒤로가기를 누르면 앱을 벗어납니다.
   - 주소를 직접 입력해 들어왔으면: 화살표는 홈으로 가며 기록을 바꿉니다(replace). 홈에서 뒤로가기를 누르면 앱을 벗어납니다.
+
+### 가족 키링 관리
+
+- 가족 이름, 사진, 키링 정보는 `src/features/family/familyProfiles.js`(가족 홈과 같은 목록)의 `name`, `avatar`, `keyring`입니다. 등록 대기 가족은 `keyring: null`입니다.
+- 없는 `familyId`이거나 키링이 없는(등록 대기) 가족이면 홈으로 이동합니다(replace). 판단은 `src/features/family/familyKeyring.js`에 있습니다.
+- 뒤로가기: 앱 안에서 왔으면 화살표와 휴대폰·브라우저 뒤로가기 모두 한 칸 뒤로 갑니다. 주소를 직접 입력해 들어왔으면 화살표는 홈으로 가며 기록을 바꿉니다(replace).
+- 05 선택과 상관없이 열립니다(가족 목록이 지금은 예시 데이터라서 본인 사용자도 막지 않음).
+- 이 화면으로 들어오는 가족 프로필 상세 화면은 아직 없습니다. 연결할 때는 `src/app/paths.js`의 `familyKeyringPath(familyId)`로 주소를 만듭니다.
+
+테스트(새 라이브러리 없이 `node --test`):
+
+```sh
+node --test src/features/family/*.test.js
+```
+
+- `familyKeyring.test.js`: 키링 있는 가족 찾기 (있음 / 등록 대기 / 없는 id)
 
 ### 개발용 확인 주소 (`npm run dev`에서만)
 
@@ -162,3 +180,5 @@ node --test src/features/notification/*.test.js
 | 주소 | 화면 |
 | --- | --- |
 | `/keyrings?preview=self` | 본인 키링 관리, 기본값 표시 (직접 들어왔을 때 화살표 → `/home?preview=self`) |
+| `/keyrings/family/mother?preview=family` | 어머니 키링 관리 (직접 들어왔을 때 화살표 → `/home?preview=family`) |
+| `/keyrings/family/grandmother?preview=family` | 키링 없는 가족 → `/home?preview=family` |

@@ -36,6 +36,20 @@ export const KEYRING_CARD_SIZE = {
   },
 }
 
+// 가족 사진: 가로 120.73 (어머니 사진 131x141 → 120.73 x 130), 세로는 원본 비율.
+// 원(120) 가운데에 둔다. 사진 파일에 원 배경이 있어서 연파랑 원은 그리지 않는다.
+const PHOTO_WIDTH = 120.73
+
+// 사진 카드: 끌기·길게 눌러 저장·선택 막기 (가족 홈 카드 사진과 같은 방식)
+const PhotoCard = styled(IconCard)`
+  img {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-touch-callout: none;
+  }
+`
+
 const InfoList = styled.dl`
   margin: 0;
 `
@@ -62,25 +76,29 @@ const InfoValue = styled.dd`
   color: ${onboardingColors.cardValue};
 `
 
-// 키링 정보 카드 (키링 아이콘 + 키링 ID + 등록 일시). 08 등록 완료와 키링 관리가 같이 쓴다.
+// 키링 정보 카드 (키링 아이콘 또는 가족 사진 + 키링 ID + 등록 일시). 08 등록 완료와 키링 관리가 같이 쓴다.
 // keyringId: 키링 코드 / registeredAt: 등록 시각(Date)
 // size: 'complete'(08) | 'manage'(키링 관리)
+// photo: 있으면 키링 아이콘 대신 이 사진 (가족 키링 관리). 화면 읽기 프로그램은 읽지 않는다
 // className: 바깥 여백 등 위치 조정용
 export default function KeyringInfoCard({
   keyringId = DEFAULT_KEYRING_ID,
   registeredAt = DEFAULT_REGISTERED_AT,
   size = 'complete',
+  photo,
   className,
 }) {
   const { height, circleSize, paddingLeft, gap, iconWidth, iconOffsetY, bodyOffsetY } =
     KEYRING_CARD_SIZE[size]
+  const Card = photo ? PhotoCard : IconCard
 
   return (
-    <IconCard
+    <Card
       className={className}
-      icon={keyringIcon}
-      iconWidth={iconWidth}
-      iconOffsetY={iconOffsetY}
+      icon={photo ?? keyringIcon}
+      iconWidth={photo ? PHOTO_WIDTH : iconWidth}
+      iconOffsetY={photo ? 0 : iconOffsetY}
+      circleColor={photo ? 'transparent' : undefined}
       bodyOffsetY={bodyOffsetY}
       height={height}
       radius={30}
@@ -100,6 +118,6 @@ export default function KeyringInfoCard({
           </time>
         </InfoValue>
       </InfoList>
-    </IconCard>
+    </Card>
   )
 }
