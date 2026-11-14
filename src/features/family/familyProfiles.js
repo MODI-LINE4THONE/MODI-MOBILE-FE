@@ -16,7 +16,8 @@ import grandfatherAvatar from '../../assets/images/avatar-grandfather.png'
 //   lastUsedText: 등록 완료일 때 안내 문구 (등록 대기는 카드가 "키링을 연결해 주세요." 표시)
 //   enabledSettings: 켜진 접근성 설정 이름 목록 (없으면 태그 줄을 그리지 않는다)
 //   keyring: 연결된 키링 { keyringId, registeredAt(Date) }. 등록 대기(키링 연결 전)는 null
-//     → 가족 키링 관리(/keyrings/family/:id)에서 사용. 가족 홈 카드는 쓰지 않는다.
+//     → 가족 프로필 상세(/families/:id, 등록 코드)와 가족 키링 관리(/keyrings/family/:id)에서 사용.
+//       가족 홈 카드는 쓰지 않는다. 키링이 없는 가족은 두 화면 모두 열리지 않고 홈으로 간다.
 // ─────────────────────────────────────────────────────────────
 
 export const FAMILY_STATUS = {

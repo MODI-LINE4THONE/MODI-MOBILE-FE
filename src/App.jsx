@@ -3,6 +3,7 @@ import { onboardingRoutes } from './app/OnboardingFlow.jsx'
 import { homeRoutes } from './app/HomeFlow.jsx'
 import { notificationRoutes } from './app/NotificationFlow.jsx'
 import { keyringRoutes } from './app/KeyringFlow.jsx'
+import { familyProfileRoutes } from './app/FamilyProfileFlow.jsx'
 import { SessionProvider } from './app/SessionContext.jsx'
 import { NotificationProvider } from './app/NotificationContext.jsx'
 import AccessibilitySettingsPage from './pages/AccessibilitySettingsPage.jsx'
@@ -16,6 +17,7 @@ const router = createBrowserRouter([
   homeRoutes, // /home (홈)
   notificationRoutes, // /notifications (알림)
   keyringRoutes, // /keyrings (키링 관리)
+  familyProfileRoutes, // /families/:familyId (가족 프로필 상세)
   { path: '/accessibility', element: <AccessibilitySettingsPage /> },
   { path: '/keyrings/lost', element: <KeyringLostPage /> },
   { path: '/keyrings/issuance', element: <KeyringIssuancePage /> },

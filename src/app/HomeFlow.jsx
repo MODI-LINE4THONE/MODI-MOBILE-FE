@@ -3,10 +3,11 @@ import { useNavigate, useSearchParams } from 'react-router'
 import SelfHomePage from '../pages/home/SelfHomePage'
 import FamilyHomePage from '../pages/home/FamilyHomePage'
 import { sampleFamilyProfiles } from '../features/family/familyProfiles'
+import { findFamilyWithKeyring } from '../features/family/familyKeyring'
 import RequireLogin from './RequireLogin'
 import { useSession } from './SessionContext'
 import { toNotificationTarget, useNotifications } from './NotificationContext'
-import { HOME_PATH, KEYRING_PATH, NOTIFICATION_PATH } from './paths'
+import { HOME_PATH, KEYRING_PATH, NOTIFICATION_PATH, familyProfilePath } from './paths'
 
 // ─────────────────────────────────────────────────────────────
 // 홈 화면 연결 (/home)
@@ -20,6 +21,8 @@ import { HOME_PATH, KEYRING_PATH, NOTIFICATION_PATH } from './paths'
 // - 종을 누르면 알림 화면(/notifications)으로. 새 기록을 쌓고 "홈에서 왔음"(state.from)을 넘겨서
 //   알림 화면의 화살표·휴대폰 뒤로가기가 모두 한 칸 뒤(이 홈)로 돌아온다.
 // - 본인 홈 "키링 관리" 카드를 누르면 키링 관리(/keyrings)로. 알림과 같은 방식(새 기록 + state.from)
+// - 가족 홈 등록 완료(키링 연결됨) 카드를 누르면 가족 프로필 상세(/families/:familyId)로. 새 기록을 쌓는다.
+//   등록 대기 카드는 누름 효과만 있고 이동하지 않는다 (이후 키링 연결 화면과 연결)
 //
 // 개발용 확인 주소 (npm run dev에서만 동작, 배포용 빌드에서는 무시되고 로그인 확인 규칙 적용)
 //   ?preview=self | family → 로그인 없이 본인 홈 / 가족 홈 (05 선택보다 먼저 적용)
@@ -27,6 +30,7 @@ import { HOME_PATH, KEYRING_PATH, NOTIFICATION_PATH } from './paths'
 //   함께 쓸 수 있음: /home?preview=family&notice=new
 //   개발용 주소로 들어온 홈에서 종을 누르면 알림 화면도 같은 preview로 열린다 (/notifications?preview=...)
 //   개발용 주소로 들어온 본인 홈에서 "키링 관리"를 누르면 /keyrings?preview=self
+//   개발용 주소로 들어온 가족 홈에서 등록 완료 카드를 누르면 /families/:familyId?preview=family
 // ─────────────────────────────────────────────────────────────
 
 const HOME_TITLE = '홈 - MODI'
@@ -67,6 +71,13 @@ function HomeScreen({ devPreview }) {
     navigate(`${KEYRING_PATH}${search}`, { state: { from: 'home' } })
   }
 
+  // 등록 완료(키링 연결됨) 가족만 프로필 상세로. 등록 대기는 카드 누름 효과만
+  const goFamilyProfile = (profile) => {
+    if (!findFamilyWithKeyring(sampleFamilyProfiles, profile.id)) return
+    const search = devPreview ? '?preview=family' : ''
+    navigate(`${familyProfilePath(profile.id)}${search}`)
+  }
+
   const commonProps = {
     userId: userId ?? undefined,
     hasNewNotification: hasNew(target),
@@ -74,7 +85,13 @@ function HomeScreen({ devPreview }) {
   }
 
   if (target === 'family') {
-    return <FamilyHomePage {...commonProps} profiles={sampleFamilyProfiles} />
+    return (
+      <FamilyHomePage
+        {...commonProps}
+        profiles={sampleFamilyProfiles}
+        onProfileClick={goFamilyProfile}
+      />
+    )
   }
   return <SelfHomePage {...commonProps} onKeyringClick={goKeyring} />
 }
