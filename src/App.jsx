@@ -1,11 +1,9 @@
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router'
 import { onboardingRoutes } from './app/OnboardingFlow.jsx'
 import { homeRoutes } from './app/HomeFlow.jsx'
-import { notificationRoutes } from './app/NotificationFlow.jsx'
 import { keyringRoutes } from './app/KeyringFlow.jsx'
 import { familyProfileRoutes } from './app/FamilyProfileFlow.jsx'
 import { SessionProvider } from './app/SessionContext.jsx'
-import { NotificationProvider } from './app/NotificationContext.jsx'
 import AccessibilitySettingsPage from './pages/AccessibilitySettingsPage.jsx'
 import KeyringLostPage from './pages/KeyringLostPage.jsx'
 import { keyringIssuanceRoutes } from './app/KeyringIssuanceFlow.jsx'
@@ -18,7 +16,6 @@ const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/onboarding" replace /> },
   onboardingRoutes, // /onboarding/... (온보딩 01~08)
   homeRoutes, // /home (홈)
-  notificationRoutes, // /notifications (알림)
   keyringRoutes, // /keyrings (키링 관리)
   familyProfileRoutes, // /families/:familyId (가족 프로필 상세)
   { path: '/families/new', element: <FamilyAddPage /> },
@@ -30,13 +27,12 @@ const router = createBrowserRouter([
 ])
 
 // SessionProvider: 로그인 아이디·05 선택을 온보딩과 홈이 함께 쓰도록 라우터 바깥에서 감싼다
-// NotificationProvider: 알림 목록·"본 시각"을 홈(새 알림 점)과 알림 화면이 함께 쓴다
 export default function App() {
   return (
     <SessionProvider>
-      <FamilyProvider><NotificationProvider>
+      <FamilyProvider>
         <RouterProvider router={router} />
-      </NotificationProvider></FamilyProvider>
+      </FamilyProvider>
     </SessionProvider>
   )
 }

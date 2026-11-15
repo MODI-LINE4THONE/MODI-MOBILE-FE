@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Navigate, useNavigate, useSearchParams } from 'react-router'
 import styled from 'styled-components'
 import OnboardingLayout from '../../components/onboarding/OnboardingLayout'
@@ -12,16 +12,21 @@ const Main = styled.main`padding: 0 25px; h2 { margin: 0 0 24px; font-size: 20px
 export default function FamilyAddPage() {
   const [name, setName] = useState('')
   const [error, setError] = useState('')
+  const [pending, setPending] = useState(false)
+  const busy = useRef(false)
   const [params] = useSearchParams()
   const { userId } = useSession()
   const { addFamily } = useFamilies()
   const navigate = useNavigate()
   const search = import.meta.env.DEV && params.get('preview') === 'family' ? '?preview=family' : ''
   if (!userId && !search) return <Navigate to="/onboarding/login" replace />
-  function submit(event) {
+  async function submit(event) {
     event.preventDefault()
-    try { const id = addFamily(name); navigate(`/keyrings/connect?familyId=${encodeURIComponent(id)}${search ? '&preview=family' : ''}`, { replace: true }) }
+    if (busy.current) return
+    busy.current = true; setPending(true); setError('')
+    try { const id = await addFamily(name); navigate(`/keyrings/connect?familyId=${encodeURIComponent(id)}${search ? '&preview=family' : ''}`, { replace: true }) }
     catch (err) { setError(err.message) }
+    finally { busy.current = false; setPending(false) }
   }
-  return <OnboardingLayout><OnboardingHeader title="가족 프로필 추가" onBack={() => navigate(`/home${search}`, { replace: true })} /><Main><h2>가족의 별명을 입력해주세요.</h2><form onSubmit={submit}><TextInput label="별명" value={name} maxLength={20} onChange={event => setName(event.target.value)} placeholder="예: 어머니" autoComplete="off" /><p>다음 단계에서 이 가족의 키링을 연결합니다.</p>{error && <p role="alert">{error}</p>}<PrimaryButton type="submit" disabled={!name.trim()}>키링 연결하기</PrimaryButton></form><p>임시 데이터로 동작하며 새로고침하면 추가한 프로필과 변경 내용은 초기화됩니다.</p></Main></OnboardingLayout>
+  return <OnboardingLayout><OnboardingHeader title="가족 프로필 추가" onBack={() => navigate(`/home${search}`, { replace: true })} /><Main><h2>가족의 별명을 입력해주세요.</h2><form onSubmit={submit}><TextInput label="별명" disabled={pending} value={name} maxLength={20} onChange={event => setName(event.target.value)} placeholder="예: 어머니" autoComplete="off" /><p>다음 단계에서 이 가족의 키링을 연결합니다.</p>{error && <p role="alert">{error}</p>}<PrimaryButton type="submit" disabled={pending || !name.trim()}>{pending ? '저장 중…' : '키링 연결하기'}</PrimaryButton></form>{!userId && <p>개발용 미리보기입니다.</p>}</Main></OnboardingLayout>
 }

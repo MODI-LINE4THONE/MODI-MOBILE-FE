@@ -108,7 +108,7 @@ export default function FamilyProfilePage({ profile, onBack, onKeyringClick, onS
         <Avatar src={avatar} alt="" draggable={false} />
         <Name>{name}</Name>
         <Status>{STATUS_LABEL[status]}</Status>
-        <KeyringCard keyringId={keyring?.keyringId} onClick={onKeyringClick} />
+        <KeyringCard keyringId={keyring ? keyring.registrationCode ?? keyring.keyringId : '연결된 키링 없음'} onClick={onKeyringClick} />
         <SettingsTitle id={SETTINGS_TITLE_ID}>접근성 설정</SettingsTitle>
         {enabledSettings.length > 0 && (
           <Tags settings={enabledSettings} aria-labelledby={SETTINGS_TITLE_ID} />
