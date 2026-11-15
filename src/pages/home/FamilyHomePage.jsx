@@ -67,7 +67,7 @@ export default function FamilyHomePage({
   onNotificationClick,
 }) {
   return (
-    <Layout withStatusBar>
+    <Layout>
       <HomeHeader
         hasNewNotification={hasNewNotification}
         onNotificationClick={onNotificationClick}

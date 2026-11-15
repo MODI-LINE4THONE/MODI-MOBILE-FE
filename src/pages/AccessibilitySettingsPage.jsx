@@ -1,3 +1,5 @@
+import RemoteProfile from '../components/keyring/RemoteProfile'
+import { profileApi, settingsFromProfile } from '../features/personalization/profileApi.js'
 import { useEffect, useRef, useState } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router'
 import { useFamilies } from '../app/FamilyContext'
@@ -84,18 +86,22 @@ export default function AccessibilitySettingsPage() {
   const params = new URLSearchParams(search)
   const familyId = params.get('familyId')
   const { profiles } = useFamilies()
-  const { userId } = useSession()
-  const preview = import.meta.env.DEV && params.get('preview') === 'family'
+  const { userId, profile } = useSession()
+  const preview = import.meta.env.DEV && ['self', 'family'].includes(params.get('preview'))
+  if (!preview && !userId) return <Navigate to="/onboarding/login" replace />
+  if (!preview) return <RemoteProfile preferredId={params.get('profileId') ?? familyId ?? profile.profileId}>{serverProfile => <SettingsEditor key={serverProfile.profileId} serverProfile={serverProfile} />}</RemoteProfile>
   if (familyId && !userId && !preview) return <Navigate to="/onboarding/login" replace />
   const family = familyId ? profiles.find(profile => profile.id === familyId) : null
   if (familyId && !family) return <Navigate to={`/home${preview ? '?preview=family' : ''}`} replace />
   return <SettingsEditor key={familyId ?? 'self'} family={family} />
 }
-function SettingsEditor({ family }) {
-  const [value, setValue] = useState(() => family ? familySettings(family) : readSettings())
+function SettingsEditor({ family, serverProfile }) {
+  const [value, setValue] = useState(() => serverProfile ? settingsFromProfile(serverProfile) : family ? familySettings(family) : readSettings())
   const { saveFamilySettings } = useFamilies()
   const [saved, setSaved] = useState(value)
   const [error, setError] = useState('')
+  const [pending, setPending] = useState(false)
+  const busy = useRef(false)
   const dialogRef = useRef(null)
   const saveRef = useRef(null)
   const mainRef = useRef(null)
@@ -105,11 +111,21 @@ function SettingsEditor({ family }) {
   const homePath = family ? `/families/${encodeURIComponent(family.id)}${preview === 'family' ? '?preview=family' : ''}` : preview === 'self' ? '/home?preview=self' : '/home'
   const changed = settingsChanged(value, saved)
   useEffect(() => { const previous = document.title; document.title = '접근성 설정 - MODI'; mainRef.current?.focus(); window.scrollTo(0, 0); return () => { document.title = previous } }, [])
-  function save() {
-    if (!changed) return
+  async function save() {
+    if (!changed || busy.current) return
     const next = value.mode === 'recommended' ? { ...value, options: optionsForPreset(value.preset) } : value
-    try { if (family) saveFamilySettings(family.id, next); else saveSettings(next); setValue(next); setSaved(next); setError(''); dialogRef.current.showModal() }
-    catch { setError('설정을 저장하지 못했어요. 브라우저 저장소 설정을 확인하고 다시 시도해주세요.') }
+    busy.current = true; setPending(true); setError('')
+    try {
+      if (serverProfile) {
+        const confirmed = await profileApi.save(serverProfile.profileId, next)
+        setValue(confirmed); setSaved(confirmed)
+      } else {
+        if (family) saveFamilySettings(family.id, next); else saveSettings(next)
+        setValue(next); setSaved(next)
+      }
+      dialogRef.current?.showModal()
+    } catch (err) { setError(err.message || '설정을 저장하지 못했어요. 다시 시도해주세요.') }
+    finally { busy.current = false; setPending(false) }
   }
   function tabKeyDown(event) {
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
@@ -117,11 +133,12 @@ function SettingsEditor({ family }) {
     const mode = event.key === 'Home' ? 'recommended' : event.key === 'End' ? 'custom' : value.mode === 'recommended' ? 'custom' : 'recommended'
     setValue({ ...value, mode }); document.getElementById(`tab-${mode}`)?.focus()
   }
-  return <Layout withStatusBar>
+  return <Layout>
     <OnboardingHeader title="접근성 설정" onBack={() => navigate(homePath, { replace: true })} />
     <Main ref={mainRef} tabIndex={-1}>
       <Intro>원하는 방식으로 화면을 설정해 보세요.</Intro>
       {family && <Notice>{family.name}님의 설정 · 새로고침하면 임시 변경 내용이 초기화됩니다.</Notice>}
+      <fieldset disabled={pending} style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}><legend style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden' }}>접근성 옵션</legend>
       <Tabs role="tablist" aria-label="설정 방식" onKeyDown={tabKeyDown}>
         {[['recommended', '추천 조합', recommendActive, recommendInactive], ['custom', '직접 설정', settingsActive, settingsInactive]].map(([mode, label, active, inactive]) => <Tab key={mode} id={`tab-${mode}`} role="tab" aria-selected={value.mode === mode} aria-controls={`panel-${mode}`} tabIndex={value.mode === mode ? 0 : -1} $active={value.mode === mode} onClick={() => setValue({ ...value, mode })}><img src={value.mode === mode ? active : inactive} alt="" />{label}</Tab>)}
       </Tabs>
@@ -135,7 +152,8 @@ function SettingsEditor({ family }) {
       </Cards></section> : <section role="tabpanel" id="panel-custom" aria-labelledby="tab-custom"><Options>
         {optionDefinitions.map(option => <Option key={option.id} $active={value.options[option.id]}><span><strong>{option.label}</strong><small id={`${option.id}-description`}>{option.description}</small></span><Switch aria-label={option.label} aria-describedby={`${option.id}-description`} checked={value.options[option.id]} onChange={event => setValue({ ...value, options: { ...value.options, [option.id]: event.target.checked } })} /></Option>)}
       </Options></section>}
-      <Footer $custom={value.mode === 'custom'}><PrimaryButton ref={saveRef} disabled={!changed} onClick={save}>이 조합으로 저장하기</PrimaryButton><Notice>{family ? '가족 설정은 현재 미리보기 세션에만 반영됩니다.' : '현재 설정은 이 브라우저에만 저장됩니다.'}</Notice>{error && <Notice role="alert">{error}</Notice>}</Footer>
+      </fieldset>
+      <Footer $custom={value.mode === 'custom'}><PrimaryButton ref={saveRef} disabled={!changed || pending} onClick={save}>{pending ? '저장 중…' : '이 조합으로 저장하기'}</PrimaryButton><Notice>{serverProfile ? `${serverProfile.name}님의 설정을 서버에 저장합니다.` : family ? '가족 설정은 현재 미리보기 세션에만 반영됩니다.' : '현재 설정은 이 브라우저에만 저장됩니다.'}</Notice>{error && <Notice role="alert">{error}</Notice>}</Footer>
     </Main>
     <Dialog ref={dialogRef} aria-labelledby="saved-title" onClose={() => saveRef.current?.focus()}><img src={success} alt="" /><h2 id="saved-title">접근성 설정 저장 완료</h2><button type="button" autoFocus onClick={() => { dialogRef.current.close(); navigate(homePath, { replace: true }) }}>{family ? '프로필로 돌아가기' : '홈으로 돌아가기'}</button></Dialog>
   </Layout>

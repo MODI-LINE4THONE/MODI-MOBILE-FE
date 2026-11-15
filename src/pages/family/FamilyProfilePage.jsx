@@ -102,7 +102,7 @@ export default function FamilyProfilePage({ profile, onBack, onKeyringClick, onS
   const { name, avatar, status, keyring, enabledSettings = [] } = profile
 
   return (
-    <OnboardingLayout withStatusBar>
+    <OnboardingLayout>
       <OnboardingHeader title="가족 프로필 상세" onBack={onBack} />
       <Main>
         <Avatar src={avatar} alt="" draggable={false} />

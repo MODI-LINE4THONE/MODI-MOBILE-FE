@@ -47,7 +47,7 @@ export default function NfcCompletePage({
   onHome,
 }) {
   return (
-    <OnboardingLayout withStatusBar>
+    <OnboardingLayout>
       <OnboardingHeader title="키링 등록하기" onBack={onBack} />
       <Content>
         <Title>등록 완료</Title>

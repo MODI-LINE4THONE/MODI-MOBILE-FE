@@ -1,18 +1,10 @@
 import styled from 'styled-components'
 import OnboardingLayout from '../../components/onboarding/OnboardingLayout'
 import OnboardingFooter from '../../components/onboarding/OnboardingFooter'
-import StatusBar from '../../components/onboarding/StatusBar'
 import { onboardingColors } from '../../styles/onboarding/colors'
 import { splashBackground } from '../../styles/onboarding/backgrounds'
 
-const STATUS_BAR_HEIGHT = 54
-const GREETING_TOP = 354 // 피그마 텍스트 상자 y
-
-// 배경 그라데이션은 화면 전체 기준(스플래시와 같음), 상태 표시줄만 흰색으로 덮는다
-const StatusBarArea = styled.div`
-  flex-shrink: 0;
-  background: ${onboardingColors.background};
-`
+const GREETING_TOP = 300 // 시안의 기기 상태바 영역을 제외한 위치
 
 const Content = styled.div`
   display: flex;
@@ -23,7 +15,7 @@ const Content = styled.div`
 
 // 피그마 텍스트 상자: y 354, 줄 높이 32 x 2줄 = 64, 가운데 정렬
 const Greeting = styled.h1`
-  margin: ${GREETING_TOP - STATUS_BAR_HEIGHT}px 0 0;
+  margin: ${GREETING_TOP}px 0 0;
   font-size: 18px;
   font-weight: 500;
   line-height: 32px;
@@ -38,9 +30,6 @@ const Greeting = styled.h1`
 export default function StartPage({ userId = 'user01', onStart }) {
   return (
     <OnboardingLayout background={splashBackground}>
-      <StatusBarArea>
-        <StatusBar />
-      </StatusBarArea>
       <Content>
         <Greeting>
           {userId}님, 안녕하세요.

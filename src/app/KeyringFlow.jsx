@@ -1,3 +1,4 @@
+import RemoteKeyringPage from '../pages/keyring/RemoteKeyringPage'
 import { useLayoutEffect } from 'react'
 import { Navigate, useLocation, useNavigate, useParams, useSearchParams } from 'react-router'
 import SelfKeyringPage from '../pages/keyring/SelfKeyringPage'
@@ -82,6 +83,8 @@ function SelfKeyringScreen({ devPreview }) {
   const menus = useKeyringMenus()
   useKeyringTitle()
 
+  if (!devPreview) return <RemoteKeyringPage />
+
   // 본인 사용자일 때만 07 정보 (05 선택이 없으면 본인으로 본다)
   const target = devPreview?.target ?? profile.target
   const ownKeyring = target === 'family' ? null : keyring
@@ -110,6 +113,8 @@ function FamilyKeyringScreen({ devPreview }) {
   const { profiles } = useFamilies()
   const menus = useKeyringMenus(familyId)
   useKeyringTitle()
+
+  if (!devPreview) return <RemoteKeyringPage familyId={familyId} />
 
   const homePath = homePathFor(devPreview)
   const family = findFamilyWithKeyring(profiles, familyId)

@@ -67,7 +67,7 @@ export default function SelfHomePage({
   onNotificationClick,
 }) {
   return (
-    <OnboardingLayout withStatusBar>
+    <OnboardingLayout>
       <HomeHeader
         hasNewNotification={hasNewNotification}
         onNotificationClick={onNotificationClick}

@@ -66,7 +66,7 @@ export default function ProfileSetupPage({
   }
 
   return (
-    <OnboardingLayout withStatusBar>
+    <OnboardingLayout>
       <OnboardingHeader title="프로필 만들기" onBack={onBack} />
       <Content>
         <Question id={questionId}>누구를 위한 설정인가요?</Question>

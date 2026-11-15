@@ -1,12 +1,13 @@
+import { readSession, writeSession } from '../auth/sessionStorage.js'
 const baseUrl = (import.meta.env?.VITE_API_BASE_URL || 'https://modi.kang0131.shop').replace(/\/$/, '')
-let accessToken = null
 
-// 새로고침하면 재로그인한다. 토큰은 영구 저장소에 기록하지 않는다.
-export function setAccessToken(token) {
-  accessToken = token
+// 토큰과 로그인 상태는 같은 탭의 sessionStorage에서 함께 복원한다.
+export function setAccessToken(token, metadata = {}) {
+  writeSession(token ? { accessToken: token, ...metadata } : null)
 }
 
 export async function apiRequest(path, { method = 'GET', body, fetchImpl = globalThis.fetch } = {}) {
+  const accessToken = readSession()?.accessToken
   let response
   try {
     response = await fetchImpl(`${baseUrl}${path}`, {
