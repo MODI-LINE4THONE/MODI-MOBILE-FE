@@ -23,6 +23,8 @@ export function usePreviewSearch() {
   const params = new URLSearchParams()
   const familyId = new URLSearchParams(search).get('familyId')
   if (familyId) params.set('familyId', familyId)
+  const profileId = new URLSearchParams(search).get('profileId')
+  if (profileId) params.set('profileId', profileId)
   if (import.meta.env.DEV && ['self', 'family'].includes(preview)) params.set('preview', preview)
   return params.size ? `?${params}` : ''
 }

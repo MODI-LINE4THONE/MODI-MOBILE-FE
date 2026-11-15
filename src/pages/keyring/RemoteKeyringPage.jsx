@@ -27,6 +27,8 @@ function Keyrings({ profile }) {
   return <OnboardingLayout><OnboardingHeader title="키링 관리" onBack={() => navigate('/home')} /><main style={{ padding: '0 25px 40px' }}>
     <h2>{profile.name}님의 키링</h2>
     {error ? <><p role="alert">{error}</p><button onClick={() => setAttempt(value => value + 1)}>다시 시도</button></> : rings === null ? <p role="status">키링을 불러오는 중입니다.</p> : rings.length === 0 ? <p>연결된 키링이 없습니다.</p> : rings.map(ring => <section key={ring.keyringId} style={{ marginBottom: 24 }}><KeyringInfoCard keyringId={ring.keyringId} registeredAt={null} size="manage" /><p>등록 코드: {ring.registrationCode}</p><p>상태: {statuses[ring.status]}</p></section>)}
+    <button onClick={() => navigate(`/keyrings/connect?profileId=${profile.profileId}`)}>새 키링 연결하기</button>
+    <button onClick={() => navigate(`/keyrings/lost?profileId=${profile.profileId}`)}>키링 분실 처리</button>
     <button onClick={() => navigate(`/accessibility?profileId=${profile.profileId}`)}>이 프로필의 접근성 설정</button>
   </main></OnboardingLayout>
 }
