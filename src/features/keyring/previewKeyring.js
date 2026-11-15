@@ -1,6 +1,6 @@
 // UI preview only: never used to claim a real keyring has been disabled.
 const STORAGE_KEY = 'modi:keyring-preview:v1'
-const initialKeyring = { id: 'TM-8244', status: 'active', lastUsedLocation: null }
+const initialKeyring = { id: 'AB1234', status: 'active', lastUsedLocation: null }
 
 export function readPreviewKeyring(storage = localStorage) {
   try {

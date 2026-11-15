@@ -6,7 +6,7 @@ import { sampleFamilyProfiles } from '../features/family/familyProfiles'
 import { findFamilyWithKeyring } from '../features/family/familyKeyring'
 import RequireLogin from './RequireLogin'
 import { useSession } from './SessionContext'
-import { HOME_PATH, KEYRING_ISSUANCE_PATH, KEYRING_LOST_PATH, KEYRING_PATH } from './paths'
+import { HOME_PATH, KEYRING_LOST_PATH, KEYRING_PATH } from './paths'
 
 // ─────────────────────────────────────────────────────────────
 // 키링 관리 화면 연결
@@ -16,7 +16,7 @@ import { HOME_PATH, KEYRING_ISSUANCE_PATH, KEYRING_LOST_PATH, KEYRING_PATH } fro
 // 공통
 // - 로그인 아이디가 없으면(새로고침, 주소 직접 입력) 02 로그인으로 (RequireLogin)
 // - 탭 제목 "키링 관리 - MODI"
-// - "새 키링 연결하기" → 새 키링 발급(/keyrings/issuance), "키링을 분실하셨나요?" → 키링 분실(/keyrings/lost)
+// - "새 키링 연결하기" → /keyrings/connect, "키링을 분실하셨나요?" → /keyrings/lost
 //   새 기록을 쌓아 이동 → 두 화면에서 뒤로가기(한 칸 뒤)를 누르면 키링 관리로 돌아온다
 //
 // 본인 키링 관리
@@ -63,9 +63,12 @@ function useKeyringTitle() {
 // 공통: 메뉴 2개 이동
 function useKeyringMenus() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const preview = new URLSearchParams(location.search).get('preview')
+  const search = import.meta.env.DEV && ['self', 'family'].includes(preview) ? `?preview=${preview}` : ''
   return {
-    onConnectClick: () => navigate(KEYRING_ISSUANCE_PATH),
-    onLostClick: () => navigate(KEYRING_LOST_PATH),
+    onConnectClick: () => navigate(`/keyrings/connect${search}`),
+    onLostClick: () => navigate(`${KEYRING_LOST_PATH}${search}`, { state: { fromKeyring: true } }),
   }
 }
 
