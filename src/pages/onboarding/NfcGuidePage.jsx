@@ -72,7 +72,7 @@ const GuideItem = styled.li`
 // onBack: 뒤로가기 화살표 / onNext: "다음" / onLater: "나중에" (키링 등록을 건너뛰고 온보딩 완료)
 export default function NfcGuidePage({ onBack, onNext, onLater }) {
   return (
-    <OnboardingLayout withStatusBar>
+    <OnboardingLayout>
       <OnboardingHeader title="키링 등록하기" onBack={onBack} />
       <Content>
         <Title>등록 방법</Title>

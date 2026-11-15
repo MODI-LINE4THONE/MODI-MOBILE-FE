@@ -33,5 +33,5 @@ export default function KeyringFlowLayout({ title, onBack, step, primaryLabel, o
     contentRef.current?.focus(); window.scrollTo(0, 0)
     return () => { document.title = previous }
   }, [title])
-  return <Frame withStatusBar><OnboardingHeader title={title} onBack={onBack} /><Content ref={contentRef} tabIndex={-1}>{children}{step && <Footer><OnboardingFooter primaryLabel={primaryLabel} onPrimaryClick={onPrimaryClick} primaryDisabled={primaryDisabled} step={step} totalSteps={3} progressLabel={progressLabel} showBack={!!backLabel} backLabel={backLabel} onBackClick={onSecondaryClick} /></Footer>}</Content></Frame>
+  return <Frame><OnboardingHeader title={title} onBack={onBack} /><Content ref={contentRef} tabIndex={-1}>{children}{step && <Footer><OnboardingFooter primaryLabel={primaryLabel} onPrimaryClick={onPrimaryClick} primaryDisabled={primaryDisabled} step={step} totalSteps={3} progressLabel={progressLabel} showBack={!!backLabel} backLabel={backLabel} onBackClick={onSecondaryClick} /></Footer>}</Content></Frame>
 }

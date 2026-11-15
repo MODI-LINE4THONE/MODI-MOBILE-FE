@@ -101,7 +101,7 @@ export default function SignupPage({ onBack, onGoToLogin }) {
   }
 
   return (
-    <OnboardingLayout withStatusBar>
+    <OnboardingLayout>
       <OnboardingHeader title="회원가입" onBack={onBack} />
       <Form onSubmit={handleSubmit}>
         <Fields>

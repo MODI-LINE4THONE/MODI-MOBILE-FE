@@ -58,7 +58,7 @@ export default function KeyringManageLayout({
   onLostClick,
 }) {
   return (
-    <OnboardingLayout withStatusBar>
+    <OnboardingLayout>
       <OnboardingHeader title="키링 관리" onBack={onBack} />
       <Content>
         <Title>{title}</Title>

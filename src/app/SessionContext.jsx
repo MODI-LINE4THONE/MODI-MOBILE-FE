@@ -1,16 +1,31 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react'
+import { readSession, writeSession, subscribeSession } from '../features/auth/sessionStorage.js'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { login } from '../features/auth/authApi'
 
-// 인증 토큰은 API 클라이언트의 메모리에서 관리합니다.
+// 인증 정보는 같은 탭의 sessionStorage에서 복원합니다.
 // 온보딩 완료는 현재 세션에서만 표시하며 서버 저장은 명세 확인 후 연결합니다.
 
 const SessionContext = createContext(null)
 
 export function SessionProvider({ children }) {
-  const [userId, setUserId] = useState(null)
-  const [onboardingCompleted, setOnboardingCompleted] = useState(false)
-  const [profile, setProfile] = useState({ target: null, nickname: '' })
-  const [keyring, setKeyring] = useState(null)
+  const [initialSession] = useState(readSession)
+  const [userId, setUserId] = useState(initialSession?.userId ?? null)
+  const [onboardingCompleted, setOnboardingCompleted] = useState(initialSession?.onboardingCompleted === true)
+  const [profile, setProfile] = useState(initialSession?.profile ?? { target: null, nickname: '' })
+  const [keyring, setKeyring] = useState(initialSession?.keyring ?? null)
+
+  useEffect(() => subscribeSession(session => {
+    if (!session) {
+      setUserId(null); setOnboardingCompleted(false)
+      setProfile({ target: null, nickname: '' }); setKeyring(null)
+    }
+  }), [])
+  useEffect(() => {
+    const session = readSession()
+    if (session?.userId === userId && userId) {
+      writeSession({ ...session, profile, keyring, onboardingCompleted })
+    }
+  }, [userId, profile, keyring, onboardingCompleted])
 
   const logIn = useCallback(async (credentials) => {
     const result = await login(credentials)

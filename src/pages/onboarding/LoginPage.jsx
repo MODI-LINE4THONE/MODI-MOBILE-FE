@@ -82,7 +82,7 @@ export default function LoginPage({ onLogin, onSignup }) {
   }
 
   return (
-    <OnboardingLayout withStatusBar>
+    <OnboardingLayout>
       <Form onSubmit={handleSubmit}>
         <Title>안녕하세요, MODI입니다.</Title>
         <Fields>

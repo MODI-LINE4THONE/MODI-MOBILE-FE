@@ -6,7 +6,7 @@ export async function login({ userId, password }) {
     method: 'POST', body: { loginId: userId, password },
   })
   if (!data?.accessToken) throw new Error('로그인 응답에 인증 정보가 없습니다.')
-  setAccessToken(data.accessToken)
+  setAccessToken(data.accessToken, { userId, expiresAt: Number.isFinite(data.expiresIn) && data.expiresIn > 0 ? Date.now() + data.expiresIn * 1000 : null })
   // 완료 여부 API 공개 전까지 재로그인 시 온보딩으로 이동한다.
   return { userId, onboardingCompleted: false }
 }

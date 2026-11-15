@@ -70,7 +70,7 @@ export default function FamilyNotificationPage({
   const { today, earlier } = groupNotificationsByDay(notifications, now)
 
   return (
-    <OnboardingLayout withStatusBar>
+    <OnboardingLayout>
       <OnboardingHeader title="알림" onBack={onBack} />
       <Content>
         <FilteredSection

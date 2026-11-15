@@ -15,6 +15,15 @@ export function createOnboardingApi(request = apiRequest) {
       if (!['self', 'family'].includes(target) || !name || name.length > 50) {
         throw new Error('유형과 50자 이내의 이름을 확인해주세요.')
       }
+      if (!profileId) {
+        const profiles = await request('/api/profiles/me')
+        if (!Array.isArray(profiles)) throw new Error('기존 프로필을 확인하지 못했습니다. 다시 시도해주세요.')
+        const matches = profiles.filter(profile => profile.name === name)
+        if (matches.length > 1) throw new Error('같은 이름의 프로필이 여러 개 있습니다. 프로필 목록에서 선택해주세요.')
+        if (matches.length === 1) {
+          return { target, nickname: target === 'self' ? '' : name, profileId: readCreatedId(matches[0], 'profileId') }
+        }
+      }
       // self/family 구분 필드는 공개 명세에 없어 화면 상태로만 보관한다.
       const data = await request(profileId ? `/api/profiles/${profileId}` : '/api/profiles', {
         method: profileId ? 'PATCH' : 'POST', body: { name },

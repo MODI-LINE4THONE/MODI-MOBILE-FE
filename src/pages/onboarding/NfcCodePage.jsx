@@ -61,7 +61,7 @@ export default function NfcCodePage({ onNext, onBack, onPrevious, initialCode = 
   }
 
   return (
-    <OnboardingLayout withStatusBar>
+    <OnboardingLayout>
       <OnboardingHeader title="키링 등록하기" onBack={onBack} />
       <Content>
         <Title id={titleId}>등록 코드</Title>

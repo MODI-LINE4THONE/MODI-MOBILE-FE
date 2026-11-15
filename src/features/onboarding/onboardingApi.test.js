@@ -6,12 +6,13 @@ test('프로필 생성은 서버 ID를 보관하고 재편집은 PATCH한다', a
   const calls = []
   const api = createOnboardingApi(async (path, options) => {
     calls.push({ path, ...options })
-    return { profileId: 12 }
+    return path === '/api/profiles/me' ? [] : { profileId: 12 }
   })
   const profile = await api.saveProfile({ target: 'family', nickname: ' 어머니 ' })
   assert.deepEqual(profile, { target: 'family', nickname: '어머니', profileId: 12 })
   await api.saveProfile({ target: 'self' }, { userId: 'user01', profileId: 12 })
   assert.deepEqual(calls, [
+    { path: '/api/profiles/me' },
     { path: '/api/profiles', method: 'POST', body: { name: '어머니' } },
     { path: '/api/profiles/12', method: 'PATCH', body: { name: 'user01' } },
   ])
@@ -42,4 +43,18 @@ test('ID 없는 응답과 연결 실패는 성공으로 바꾸지 않는다', as
   await assert.rejects(api.connectKeyring(7, 12), /서버 실패/)
   const wrong = createOnboardingApi(async () => ({ keyringId: 8, profileId: 12 }))
   await assert.rejects(wrong.connectKeyring(7, 12), /연결 결과/)
+})
+
+
+test('같은 이름의 기존 프로필은 생성하거나 덮어쓰지 않고 재사용한다', async () => {
+  const calls = []
+  const api = createOnboardingApi(async (path, options) => {
+    calls.push({ path, options })
+    return [{ profileId: 42, name: 'user01' }]
+  })
+  const result = await api.saveProfile({ target: 'self' }, { userId: 'user01' })
+  assert.equal(result.profileId, 42)
+  assert.equal(calls.length, 1)
+  assert.equal(calls[0].path, '/api/profiles/me')
+  assert.equal(calls[0].options, undefined)
 })
