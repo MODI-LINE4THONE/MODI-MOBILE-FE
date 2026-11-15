@@ -1,4 +1,4 @@
-import { useId, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import styled from 'styled-components'
 import OnboardingLayout from '../../components/onboarding/OnboardingLayout'
 import OnboardingHeader from '../../components/onboarding/OnboardingHeader'
@@ -36,20 +36,28 @@ const CodeArea = styled.div`
   margin: 14px 0 0 22px;
 `
 
-const CODE_FORMAT = 'AA9999'
+const CODE_FORMAT = 'XXXXXX'
 
-// onNext({ code, registeredAt }): 6자리가 다 찬 뒤 "다음"을 누르면 호출.
+// onNext({ code }): 6자리가 다 찬 뒤 "다음"을 누르면 호출.
 //   화면 이동은 이 화면을 쓰는 쪽(OnboardingFlow)이 맡는다. 없으면 동작 없음.
 // onBack: 뒤로가기 화살표 / onPrevious: "이전으로"
-export default function NfcCodePage({ onNext, onBack, onPrevious }) {
+export default function NfcCodePage({ onNext, onBack, onPrevious, initialCode = '' }) {
+  const [pending, setPending] = useState(false)
+  const [error, setError] = useState('')
+  const busy = useRef(false)
   const titleId = useId()
   const descriptionId = useId()
-  const [code, setCode] = useState('')
+  const [code, setCode] = useState(initialCode)
   const isComplete = code.length === CODE_FORMAT.length
 
-  const handleNext = () => {
-    if (!isComplete) return
-    onNext?.({ code, registeredAt: new Date() })
+  const handleNext = async () => {
+    if (!isComplete || busy.current) return
+    busy.current = true
+    setPending(true)
+    setError('')
+    try { await onNext?.({ code }) }
+    catch (err) { setError(err.message || '키링 등록에 실패했습니다.') }
+    finally { busy.current = false; setPending(false) }
   }
 
   return (
@@ -63,15 +71,16 @@ export default function NfcCodePage({ onNext, onBack, onPrevious }) {
         <CodeArea>
           <CodeInput
             value={code}
-            onChange={setCode}
+            onChange={(value) => { if (!pending) setCode(value) }}
             format={CODE_FORMAT}
             labelledBy={titleId}
             describedBy={descriptionId}
           />
         </CodeArea>
+        {error && <p role="alert">{error}</p>}
         <OnboardingFooter
-          primaryLabel="다음"
-          primaryDisabled={!isComplete}
+          primaryLabel={pending ? '저장 중…' : '다음'}
+          primaryDisabled={!isComplete || pending}
           onPrimaryClick={handleNext}
           onBackClick={onPrevious}
           step={2}

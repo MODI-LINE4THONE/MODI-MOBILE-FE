@@ -111,11 +111,11 @@ export default function KeyringInfoCard({
         <InfoValue>{keyringId}</InfoValue>
         <InfoLabel>등록 일시</InfoLabel>
         <InfoValue>
-          <time dateTime={toDateTimeAttribute(registeredAt)}>
+          {registeredAt === null ? '서버 정보 없음' : <time dateTime={toDateTimeAttribute(registeredAt)}>
             {formatKoreanDate(registeredAt)}
             <br />
             {formatKoreanTime(registeredAt)}
-          </time>
+          </time>}
         </InfoValue>
       </InfoList>
     </Card>
