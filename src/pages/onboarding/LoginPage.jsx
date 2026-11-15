@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import styled from 'styled-components'
 import OnboardingLayout from '../../components/onboarding/OnboardingLayout'
 import PrimaryButton from '../../components/onboarding/PrimaryButton'
@@ -52,7 +52,7 @@ const LoginButton = styled(PrimaryButton)`
   margin: auto 0 64px;
 `
 
-// 로그인 기능(서버 확인)은 아직 없음.
+// 실제 로그인 요청에 성공한 경우에만 다음 화면으로 이동한다.
 // 아이디·비밀번호를 둘 다 입력해야 "로그인"이 활성. 띄어쓰기만 있으면 입력 안 한 것으로 본다.
 // onLogin({ userId, password }): 활성 상태에서 "로그인"을 누르면 호출
 //   (아이디는 앞뒤 띄어쓰기를 뺀 값, 비밀번호는 입력한 그대로. 서버 연결 때 함께 보낸다)
@@ -60,12 +60,25 @@ const LoginButton = styled(PrimaryButton)`
 export default function LoginPage({ onLogin, onSignup }) {
   const [userId, setUserId] = useState('')
   const [password, setPassword] = useState('')
-  const canSubmit = userId.trim() !== '' && password.trim() !== ''
+  const [pending, setPending] = useState(false)
+  const [error, setError] = useState('')
+  const submitting = useRef(false)
+  const canSubmit = !pending && userId.trim() !== '' && password.trim() !== ''
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!canSubmit) return
-    onLogin?.({ userId: userId.trim(), password })
+    if (!canSubmit || submitting.current) return
+    submitting.current = true
+    setPending(true)
+    setError('')
+    try {
+      await onLogin?.({ userId: userId.trim(), password })
+    } catch (err) {
+      setError(err.message || '로그인에 실패했습니다.')
+    } finally {
+      submitting.current = false
+      setPending(false)
+    }
   }
 
   return (
@@ -90,12 +103,13 @@ export default function LoginPage({ onLogin, onSignup }) {
             onChange={(e) => setPassword(e.target.value)}
           />
         </Fields>
+        {error && <p role="alert">{error}</p>}
         <SignupRow>
           계정이 없으신가요?
           <SignupLink onClick={onSignup}>회원가입</SignupLink>
         </SignupRow>
         <LoginButton type="submit" disabled={!canSubmit}>
-          로그인
+          {pending ? '로그인 중…' : '로그인'}
         </LoginButton>
       </Form>
     </OnboardingLayout>
