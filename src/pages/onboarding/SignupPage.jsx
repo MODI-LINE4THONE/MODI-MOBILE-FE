@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { checkId, signup } from '../../features/auth/authApi.js'
+import { useRef, useState } from 'react'
 import styled from 'styled-components'
 import OnboardingLayout from '../../components/onboarding/OnboardingLayout'
 import OnboardingHeader from '../../components/onboarding/OnboardingHeader'
@@ -35,7 +36,7 @@ const SubmitButton = styled(PrimaryButton)`
   margin: auto 0 64px;
 `
 
-// 서버 연결 전: 중복확인은 아이디가 입력돼 있으면 항상 "사용 가능".
+// 중복 확인·가입 성공 응답을 받은 경우에만 다음 단계로 진행한다.
 // onBack: 뒤로가기 화살표를 누르면 호출
 // onGoToLogin: 팝업의 "로그인 화면으로 돌아가기"를 누르면 호출
 export default function SignupPage({ onBack, onGoToLogin }) {
@@ -45,21 +46,58 @@ export default function SignupPage({ onBack, onGoToLogin }) {
   const [passwordConfirm, setPasswordConfirm] = useState('')
   const [isPopupOpen, setIsPopupOpen] = useState(false)
 
+  const [pending, setPending] = useState(false)
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
+  const busy = useRef(false)
+  const currentUserId = useRef('')
+
   const trimmedUserId = userId.trim()
   // 중복확인 뒤 아이디를 고치면 다시 확인해야 한다
   const isUserIdChecked = checkedUserId !== null && checkedUserId === userId
   const isPasswordValid = PASSWORD_RULE.test(password)
-  const canSubmit = isUserIdChecked && isPasswordValid && passwordConfirm === password
+  const canSubmit = !pending && isUserIdChecked && isPasswordValid && passwordConfirm === password
 
-  const handleCheckUserId = () => {
-    if (trimmedUserId === '') return
-    setCheckedUserId(userId)
+  const handleCheckUserId = async () => {
+    if (busy.current) return
+    if (trimmedUserId.length < 4 || trimmedUserId.length > 15) {
+      setError('아이디는 4~15자로 입력해주세요.')
+      return
+    }
+    const requestedId = userId
+    busy.current = true
+    setPending(true)
+    setError('')
+    setMessage('')
+    setCheckedUserId(null)
+    try {
+      const available = await checkId(trimmedUserId)
+      if (currentUserId.current !== requestedId) return
+      if (available) setCheckedUserId(requestedId)
+      setMessage(available ? '사용 가능한 아이디입니다.' : '이미 사용 중인 아이디입니다.')
+    } catch (err) {
+      setError(err.message || '중복 확인에 실패했습니다.')
+    } finally {
+      busy.current = false
+      setPending(false)
+    }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!canSubmit) return
-    setIsPopupOpen(true)
+    if (!canSubmit || busy.current) return
+    busy.current = true
+    setPending(true)
+    setError('')
+    try {
+      await signup({ userId: trimmedUserId, password })
+      setIsPopupOpen(true)
+    } catch (err) {
+      setError(err.message || '회원가입에 실패했습니다.')
+    } finally {
+      busy.current = false
+      setPending(false)
+    }
   }
 
   return (
@@ -71,12 +109,17 @@ export default function SignupPage({ onBack, onGoToLogin }) {
             label="아이디"
             actionLabel="중복확인"
             onActionClick={handleCheckUserId}
-            message={isUserIdChecked ? '사용 가능한 아이디입니다.' : ''}
+            message={message}
             type="text"
             placeholder="아이디 입력"
             autoComplete="username"
             value={userId}
-            onChange={(e) => setUserId(e.target.value)}
+            onChange={(e) => {
+              currentUserId.current = e.target.value
+              setUserId(e.target.value)
+              setCheckedUserId(null)
+              setMessage('')
+            }}
           />
           <PasswordFields>
             <TextInput
@@ -99,8 +142,9 @@ export default function SignupPage({ onBack, onGoToLogin }) {
             )}
           </PasswordFields>
         </Fields>
+        {error && <p role="alert">{error}</p>}
         <SubmitButton type="submit" disabled={!canSubmit}>
-          회원가입
+          {pending ? '처리 중…' : '회원가입'}
         </SubmitButton>
       </Form>
       <ResultPopup
