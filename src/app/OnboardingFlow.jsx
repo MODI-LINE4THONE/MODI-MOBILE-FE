@@ -1,3 +1,4 @@
+import { onboardingApi } from '../features/onboarding/onboardingApi.js'
 import { useCallback, useLayoutEffect, useRef, useState } from 'react'
 import { Navigate, Outlet, useLocation, useNavigate, useOutletContext } from 'react-router'
 import styled from 'styled-components'
@@ -218,7 +219,7 @@ function StartScreen() {
 
 // 05 프로필 만들기: 화살표 → 04 / "다음" → 06 / "이전으로" → 04
 function ProfileScreen() {
-  const { profile, setProfile } = useSession()
+  const { userId, profile, setProfile } = useSession()
   const { go, goBackTo } = useScreenNav()
   const toStart = () => goBackTo('start')
   return (
@@ -226,8 +227,9 @@ function ProfileScreen() {
       initialTarget={profile.target}
       initialNickname={profile.nickname}
       onBack={toStart}
-      onNext={(value) => {
-        setProfile(value)
+      onNext={async (value) => {
+        const saved = await onboardingApi.saveProfile(value, { userId, profileId: profile.profileId })
+        setProfile(saved)
         go('nfcGuide', { replace: true })
       }}
       onPrevious={toStart}
@@ -248,15 +250,27 @@ function NfcGuideScreen() {
   )
 }
 
-// 07 등록 코드: 화살표 → 04 / "다음" → 08 (코드와 누른 시각을 앱 전체 정보에 저장) / "이전으로" → 06
+// 07 등록 코드: 서버 등록 및 프로필 연결 성공 후 08로 이동. 연결 실패 시 등록 ID를 보관해 재시도한다.
 function NfcCodeScreen() {
-  const { setKeyring } = useSession()
+  const { profile, keyring, setKeyring } = useSession()
+  const registered = useRef(keyring)
   const { go, goBackTo } = useScreenNav()
   return (
     <NfcCodePage
+      initialCode={keyring?.registrationCode ?? ''}
       onBack={() => goBackTo('start')}
-      onNext={({ code, registeredAt }) => {
-        setKeyring({ keyringId: code, registeredAt })
+      onNext={async ({ code }) => {
+        if (!profile.profileId) throw new Error('프로필을 먼저 생성해주세요.')
+        // 등록 성공 후 연결만 실패하면 재시도할 때 등록 요청을 반복하지 않는다.
+        if (registered.current && registered.current.registrationCode !== code) {
+          throw new Error('이미 등록한 코드로 연결을 다시 시도해주세요.')
+        }
+        if (!registered.current) {
+          registered.current = await onboardingApi.registerKeyring(code)
+          setKeyring(registered.current)
+        }
+        await onboardingApi.connectKeyring(registered.current.keyringId, profile.profileId)
+        setKeyring({ ...registered.current, connected: true })
         go('nfcComplete', { replace: true })
       }}
       onPrevious={() => go('nfcGuide', { replace: true })}
@@ -270,7 +284,7 @@ function NfcCompleteScreen() {
   const { keyring } = useSession()
   const { goBackTo } = useScreenNav()
   const finishOnboarding = useFinishOnboarding('nfcComplete')
-  if (!keyring) return <Navigate to={SCREENS.nfcCode.path} replace />
+  if (!keyring?.connected) return <Navigate to={SCREENS.nfcCode.path} replace />
   return (
     <NfcCompletePage
       keyringId={keyring.keyringId}

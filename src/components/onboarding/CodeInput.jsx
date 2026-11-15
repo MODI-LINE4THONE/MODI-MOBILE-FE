@@ -64,8 +64,8 @@ const CellInput = styled.input`
   -webkit-tap-highlight-color: transparent;
 `
 
-const SLOT = { A: 'alpha', 9: 'digit' }
-const accepts = (slot, ch) => (slot === 'alpha' ? /^[A-Z]$/.test(ch) : /^[0-9]$/.test(ch))
+const SLOT = { A: 'alpha', 9: 'digit', X: 'alphanumeric' }
+const accepts = (slot, ch) => (slot === 'alpha' ? /^[A-Z]$/.test(ch) : slot === 'alphanumeric' ? /^[A-Z0-9]$/.test(ch) : /^[0-9]$/.test(ch))
 
 // 6칸 등록 코드 입력
 // - value / onChange: 입력된 코드 문자열 (앞에서부터 채워짐, 예: 'AB12')
@@ -231,12 +231,12 @@ export default function CodeInput({ value = '', onChange, format = 'AA9999', lab
           <CellInput
             ref={(el) => (inputsRef.current[i] = el)}
             type="text"
-            inputMode={slot === 'alpha' ? 'email' : 'numeric'}
-            autoCapitalize={slot === 'alpha' ? 'characters' : 'off'}
+            inputMode={slot === 'digit' ? 'numeric' : 'text'}
+            autoCapitalize={slot === 'digit' ? 'off' : 'characters'}
             autoComplete="off"
             autoCorrect="off"
             spellCheck={false}
-            aria-label={`등록 코드 ${i + 1}번째 자리, ${slot === 'alpha' ? '영문' : '숫자'}`}
+            aria-label={`등록 코드 ${i + 1}번째 자리, ${slot === 'alpha' ? '영문' : slot === 'digit' ? '숫자' : '영문 또는 숫자'}`}
             onFocus={() => handleFocus(i)}
             onBlur={(e) => handleBlur(i, e)}
             onInput={(e) => handleInput(i, e)}
