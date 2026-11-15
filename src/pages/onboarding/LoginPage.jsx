@@ -54,7 +54,8 @@ const LoginButton = styled(PrimaryButton)`
 
 // 로그인 기능(서버 확인)은 아직 없음.
 // 아이디·비밀번호를 둘 다 입력해야 "로그인"이 활성. 띄어쓰기만 있으면 입력 안 한 것으로 본다.
-// onLogin({ userId }): 활성 상태에서 "로그인"을 누르면 호출 (아이디는 앞뒤 띄어쓰기를 뺀 값)
+// onLogin({ userId, password }): 활성 상태에서 "로그인"을 누르면 호출
+//   (아이디는 앞뒤 띄어쓰기를 뺀 값, 비밀번호는 입력한 그대로. 서버 연결 때 함께 보낸다)
 // onSignup: "회원가입"을 누르면 호출
 export default function LoginPage({ onLogin, onSignup }) {
   const [userId, setUserId] = useState('')
@@ -64,7 +65,7 @@ export default function LoginPage({ onLogin, onSignup }) {
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!canSubmit) return
-    onLogin?.({ userId: userId.trim() })
+    onLogin?.({ userId: userId.trim(), password })
   }
 
   return (

@@ -54,7 +54,7 @@ export default function ProfileSetupPage({
 
   return (
     <OnboardingLayout withStatusBar>
-      <OnboardingHeader title="접근성 프로필 설정" onBack={onBack} />
+      <OnboardingHeader title="프로필 만들기" onBack={onBack} />
       <Content>
         <Question id={questionId}>누구를 위한 설정인가요?</Question>
         <Choices
