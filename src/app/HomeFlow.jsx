@@ -2,7 +2,7 @@ import { useLayoutEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
 import SelfHomePage from '../pages/home/SelfHomePage'
 import FamilyHomePage from '../pages/home/FamilyHomePage'
-import { sampleFamilyProfiles } from '../features/family/familyProfiles'
+import { useFamilies } from './FamilyContext'
 import { findFamilyWithKeyring } from '../features/family/familyKeyring'
 import RequireLogin from './RequireLogin'
 import { useSession } from './SessionContext'
@@ -49,6 +49,7 @@ function useDevPreview() {
 
 function HomeScreen({ devPreview }) {
   const { userId, profile } = useSession()
+  const { profiles } = useFamilies()
   const { hasNew } = useNotifications()
   const navigate = useNavigate()
 
@@ -73,9 +74,9 @@ function HomeScreen({ devPreview }) {
 
   // 등록 완료(키링 연결됨) 가족만 프로필 상세로. 등록 대기는 카드 누름 효과만
   const goFamilyProfile = (profile) => {
-    if (!findFamilyWithKeyring(sampleFamilyProfiles, profile.id)) return
     const search = devPreview ? '?preview=family' : ''
-    navigate(`${familyProfilePath(profile.id)}${search}`)
+    if (!findFamilyWithKeyring(profiles, profile.id)) navigate(`/keyrings/connect?familyId=${encodeURIComponent(profile.id)}${devPreview ? '&preview=family' : ''}`)
+    else navigate(`${familyProfilePath(profile.id)}${search}`)
   }
 
   const commonProps = {
@@ -88,8 +89,9 @@ function HomeScreen({ devPreview }) {
     return (
       <FamilyHomePage
         {...commonProps}
-        profiles={sampleFamilyProfiles}
+        profiles={profiles}
         onProfileClick={goFamilyProfile}
+        onAddClick={() => navigate(`/families/new${devPreview ? '?preview=family' : ''}`)}
       />
     )
   }

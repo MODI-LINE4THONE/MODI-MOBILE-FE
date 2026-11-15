@@ -20,7 +20,11 @@ export const Notice = styled.p`margin: 8px 0; color: #5b6575; font-size: 11px; l
 export function usePreviewSearch() {
   const { search } = useLocation()
   const preview = new URLSearchParams(search).get('preview')
-  return import.meta.env.DEV && ['self', 'family'].includes(preview) ? `?preview=${preview}` : ''
+  const params = new URLSearchParams()
+  const familyId = new URLSearchParams(search).get('familyId')
+  if (familyId) params.set('familyId', familyId)
+  if (import.meta.env.DEV && ['self', 'family'].includes(preview)) params.set('preview', preview)
+  return params.size ? `?${params}` : ''
 }
 export default function KeyringFlowLayout({ title, onBack, step, primaryLabel, onPrimaryClick, primaryDisabled, backLabel, onSecondaryClick, progressLabel = '키링 발급 단계', children }) {
   const contentRef = useRef(null)

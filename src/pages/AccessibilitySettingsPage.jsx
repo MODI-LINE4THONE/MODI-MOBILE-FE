@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router'
+import { Navigate, useLocation, useNavigate } from 'react-router'
+import { useFamilies } from '../app/FamilyContext'
+import { useSession } from '../app/SessionContext'
+import { familySettings } from '../features/family/familyState'
 import styled from 'styled-components'
 import OnboardingLayout from '../components/onboarding/OnboardingLayout'
 import OnboardingHeader from '../components/onboarding/OnboardingHeader'
@@ -77,7 +80,20 @@ const Dialog = styled.dialog`
   button { width: 218px; max-width: 100%; min-height: 39px; border: 0; border-radius: 15px; background: #f4f6fa; color: #2456e8; font-size: 18px; font-weight: 500; }
 `
 export default function AccessibilitySettingsPage() {
-  const [value, setValue] = useState(() => readSettings())
+  const { search } = useLocation()
+  const params = new URLSearchParams(search)
+  const familyId = params.get('familyId')
+  const { profiles } = useFamilies()
+  const { userId } = useSession()
+  const preview = import.meta.env.DEV && params.get('preview') === 'family'
+  if (familyId && !userId && !preview) return <Navigate to="/onboarding/login" replace />
+  const family = familyId ? profiles.find(profile => profile.id === familyId) : null
+  if (familyId && !family) return <Navigate to={`/home${preview ? '?preview=family' : ''}`} replace />
+  return <SettingsEditor key={familyId ?? 'self'} family={family} />
+}
+function SettingsEditor({ family }) {
+  const [value, setValue] = useState(() => family ? familySettings(family) : readSettings())
+  const { saveFamilySettings } = useFamilies()
   const [saved, setSaved] = useState(value)
   const [error, setError] = useState('')
   const dialogRef = useRef(null)
@@ -85,13 +101,14 @@ export default function AccessibilitySettingsPage() {
   const mainRef = useRef(null)
   const navigate = useNavigate()
   const location = useLocation()
-  const homePath = import.meta.env.DEV && new URLSearchParams(location.search).get('preview') === 'self' ? '/home?preview=self' : '/home'
+  const preview = import.meta.env.DEV ? new URLSearchParams(location.search).get('preview') : null
+  const homePath = family ? `/families/${encodeURIComponent(family.id)}${preview === 'family' ? '?preview=family' : ''}` : preview === 'self' ? '/home?preview=self' : '/home'
   const changed = settingsChanged(value, saved)
   useEffect(() => { const previous = document.title; document.title = '접근성 설정 - MODI'; mainRef.current?.focus(); window.scrollTo(0, 0); return () => { document.title = previous } }, [])
   function save() {
     if (!changed) return
     const next = value.mode === 'recommended' ? { ...value, options: optionsForPreset(value.preset) } : value
-    try { saveSettings(next); setValue(next); setSaved(next); setError(''); dialogRef.current.showModal() }
+    try { if (family) saveFamilySettings(family.id, next); else saveSettings(next); setValue(next); setSaved(next); setError(''); dialogRef.current.showModal() }
     catch { setError('설정을 저장하지 못했어요. 브라우저 저장소 설정을 확인하고 다시 시도해주세요.') }
   }
   function tabKeyDown(event) {
@@ -104,6 +121,7 @@ export default function AccessibilitySettingsPage() {
     <OnboardingHeader title="접근성 설정" onBack={() => navigate(homePath, { replace: true })} />
     <Main ref={mainRef} tabIndex={-1}>
       <Intro>원하는 방식으로 화면을 설정해 보세요.</Intro>
+      {family && <Notice>{family.name}님의 설정 · 새로고침하면 임시 변경 내용이 초기화됩니다.</Notice>}
       <Tabs role="tablist" aria-label="설정 방식" onKeyDown={tabKeyDown}>
         {[['recommended', '추천 조합', recommendActive, recommendInactive], ['custom', '직접 설정', settingsActive, settingsInactive]].map(([mode, label, active, inactive]) => <Tab key={mode} id={`tab-${mode}`} role="tab" aria-selected={value.mode === mode} aria-controls={`panel-${mode}`} tabIndex={value.mode === mode ? 0 : -1} $active={value.mode === mode} onClick={() => setValue({ ...value, mode })}><img src={value.mode === mode ? active : inactive} alt="" />{label}</Tab>)}
       </Tabs>
@@ -117,8 +135,8 @@ export default function AccessibilitySettingsPage() {
       </Cards></section> : <section role="tabpanel" id="panel-custom" aria-labelledby="tab-custom"><Options>
         {optionDefinitions.map(option => <Option key={option.id} $active={value.options[option.id]}><span><strong>{option.label}</strong><small id={`${option.id}-description`}>{option.description}</small></span><Switch aria-label={option.label} aria-describedby={`${option.id}-description`} checked={value.options[option.id]} onChange={event => setValue({ ...value, options: { ...value.options, [option.id]: event.target.checked } })} /></Option>)}
       </Options></section>}
-      <Footer $custom={value.mode === 'custom'}><PrimaryButton ref={saveRef} disabled={!changed} onClick={save}>이 조합으로 저장하기</PrimaryButton><Notice>현재 설정은 이 브라우저에만 저장됩니다.</Notice>{error && <Notice role="alert">{error}</Notice>}</Footer>
+      <Footer $custom={value.mode === 'custom'}><PrimaryButton ref={saveRef} disabled={!changed} onClick={save}>이 조합으로 저장하기</PrimaryButton><Notice>{family ? '가족 설정은 현재 미리보기 세션에만 반영됩니다.' : '현재 설정은 이 브라우저에만 저장됩니다.'}</Notice>{error && <Notice role="alert">{error}</Notice>}</Footer>
     </Main>
-    <Dialog ref={dialogRef} aria-labelledby="saved-title" onClose={() => saveRef.current?.focus()}><img src={success} alt="" /><h2 id="saved-title">접근성 설정 저장 완료</h2><button type="button" autoFocus onClick={() => { dialogRef.current.close(); navigate(homePath, { replace: true }) }}>홈으로 돌아가기</button></Dialog>
+    <Dialog ref={dialogRef} aria-labelledby="saved-title" onClose={() => saveRef.current?.focus()}><img src={success} alt="" /><h2 id="saved-title">접근성 설정 저장 완료</h2><button type="button" autoFocus onClick={() => { dialogRef.current.close(); navigate(homePath, { replace: true }) }}>{family ? '프로필로 돌아가기' : '홈으로 돌아가기'}</button></Dialog>
   </Layout>
 }
