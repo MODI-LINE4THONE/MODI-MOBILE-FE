@@ -2,7 +2,7 @@ import { useLayoutEffect } from 'react'
 import { Navigate, useLocation, useNavigate, useParams, useSearchParams } from 'react-router'
 import SelfKeyringPage from '../pages/keyring/SelfKeyringPage'
 import FamilyKeyringPage from '../pages/keyring/FamilyKeyringPage'
-import { sampleFamilyProfiles } from '../features/family/familyProfiles'
+import { useFamilies } from './FamilyContext'
 import { findFamilyWithKeyring } from '../features/family/familyKeyring'
 import RequireLogin from './RequireLogin'
 import { useSession } from './SessionContext'
@@ -61,14 +61,14 @@ function useKeyringTitle() {
 }
 
 // 공통: 메뉴 2개 이동
-function useKeyringMenus() {
+function useKeyringMenus(familyId) {
   const navigate = useNavigate()
   const location = useLocation()
   const preview = new URLSearchParams(location.search).get('preview')
   const search = import.meta.env.DEV && ['self', 'family'].includes(preview) ? `?preview=${preview}` : ''
   return {
-    onConnectClick: () => navigate(`/keyrings/connect${search}`),
-    onLostClick: () => navigate(`${KEYRING_LOST_PATH}${search}`, { state: { fromKeyring: true } }),
+    onConnectClick: () => navigate(`/keyrings/connect${familyId ? `?familyId=${encodeURIComponent(familyId)}${search ? '&' + search.slice(1) : ''}` : search}`),
+    onLostClick: () => navigate(`${KEYRING_LOST_PATH}${familyId ? `?familyId=${encodeURIComponent(familyId)}${search ? '&' + search.slice(1) : ''}` : search}`, { state: { fromKeyring: true } }),
   }
 }
 
@@ -107,11 +107,12 @@ function FamilyKeyringScreen({ devPreview }) {
   const navigate = useNavigate()
   const location = useLocation()
   const { familyId } = useParams()
-  const menus = useKeyringMenus()
+  const { profiles } = useFamilies()
+  const menus = useKeyringMenus(familyId)
   useKeyringTitle()
 
   const homePath = homePathFor(devPreview)
-  const family = findFamilyWithKeyring(sampleFamilyProfiles, familyId)
+  const family = findFamilyWithKeyring(profiles, familyId)
   if (!family) return <Navigate to={homePath} replace />
 
   // 앱 안에서 왔으면 한 칸 뒤로, 주소를 직접 입력해 들어왔으면(앱 안의 이전 기록 없음) 홈으로 replace

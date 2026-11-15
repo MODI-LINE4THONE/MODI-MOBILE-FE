@@ -10,6 +10,8 @@ import AccessibilitySettingsPage from './pages/AccessibilitySettingsPage.jsx'
 import KeyringLostPage from './pages/KeyringLostPage.jsx'
 import { keyringIssuanceRoutes } from './app/KeyringIssuanceFlow.jsx'
 import { keyringConnectRoutes } from './app/KeyringConnectFlow.jsx'
+import { FamilyProvider } from './app/FamilyContext.jsx'
+import FamilyAddPage from './pages/family/FamilyAddPage.jsx'
 
 // 앱 전체 주소. 홈 화면 등 /onboarding 밖의 화면이 생기면 여기에 추가한다.
 const router = createBrowserRouter([
@@ -19,6 +21,7 @@ const router = createBrowserRouter([
   notificationRoutes, // /notifications (알림)
   keyringRoutes, // /keyrings (키링 관리)
   familyProfileRoutes, // /families/:familyId (가족 프로필 상세)
+  { path: '/families/new', element: <FamilyAddPage /> },
   { path: '/accessibility', element: <AccessibilitySettingsPage /> },
   { path: '/keyrings/lost', element: <KeyringLostPage /> },
   keyringIssuanceRoutes,
@@ -31,9 +34,9 @@ const router = createBrowserRouter([
 export default function App() {
   return (
     <SessionProvider>
-      <NotificationProvider>
+      <FamilyProvider><NotificationProvider>
         <RouterProvider router={router} />
-      </NotificationProvider>
+      </NotificationProvider></FamilyProvider>
     </SessionProvider>
   )
 }

@@ -1,7 +1,7 @@
 import { useLayoutEffect } from 'react'
 import { Navigate, useLocation, useNavigate, useParams, useSearchParams } from 'react-router'
 import FamilyProfilePage from '../pages/family/FamilyProfilePage'
-import { sampleFamilyProfiles } from '../features/family/familyProfiles'
+import { useFamilies } from './FamilyContext'
 import { findFamilyWithKeyring } from '../features/family/familyKeyring'
 import RequireLogin from './RequireLogin'
 import { FAMILY_PROFILE_PATH, HOME_PATH, familyKeyringPath } from './paths'
@@ -43,6 +43,7 @@ function FamilyProfileScreen({ devPreview }) {
   const navigate = useNavigate()
   const location = useLocation()
   const { familyId } = useParams()
+  const { profiles } = useFamilies()
 
   useLayoutEffect(() => {
     document.title = FAMILY_PROFILE_TITLE
@@ -51,7 +52,7 @@ function FamilyProfileScreen({ devPreview }) {
 
   const previewSearch = devPreview ? `?preview=${devPreview.target}` : ''
   const homePath = `${HOME_PATH}${previewSearch}`
-  const family = findFamilyWithKeyring(sampleFamilyProfiles, familyId)
+  const family = findFamilyWithKeyring(profiles, familyId)
   if (!family) return <Navigate to={homePath} replace />
 
   // 앱 안에서 왔으면 한 칸 뒤로, 주소를 직접 입력해 들어왔으면(앱 안의 이전 기록 없음) 홈으로 replace
@@ -63,7 +64,7 @@ function FamilyProfileScreen({ devPreview }) {
 
   const goKeyring = () => navigate(`${familyKeyringPath(family.id)}${previewSearch}`)
 
-  return <FamilyProfilePage profile={family} onBack={goBack} onKeyringClick={goKeyring} />
+  return <FamilyProfilePage profile={family} onBack={goBack} onKeyringClick={goKeyring} onSettingsClick={() => navigate(`/accessibility?familyId=${encodeURIComponent(familyId)}${devPreview ? '&preview=family' : ''}`)} />
 }
 
 // 개발용 확인 주소면 로그인 확인을 건너뛰고, 아니면 로그인 확인 뒤 화면
