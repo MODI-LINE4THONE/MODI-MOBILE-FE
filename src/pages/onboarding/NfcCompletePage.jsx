@@ -48,7 +48,7 @@ export default function NfcCompletePage({
 }) {
   return (
     <OnboardingLayout withStatusBar>
-      <OnboardingHeader title="NFC 키링 등록" onBack={onBack} />
+      <OnboardingHeader title="키링 등록하기" onBack={onBack} />
       <Content>
         <Title>등록 완료</Title>
         <Description>키링이 정상적으로 등록되었습니다.</Description>
@@ -59,7 +59,7 @@ export default function NfcCompletePage({
           showBack={false}
           step={3}
           totalSteps={3}
-          progressLabel="NFC 키링 등록 단계"
+          progressLabel="키링 등록 단계"
         />
       </Content>
     </OnboardingLayout>

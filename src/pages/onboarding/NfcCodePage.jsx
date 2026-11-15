@@ -54,7 +54,7 @@ export default function NfcCodePage({ onNext, onBack, onPrevious }) {
 
   return (
     <OnboardingLayout withStatusBar>
-      <OnboardingHeader title="NFC 키링 등록" onBack={onBack} />
+      <OnboardingHeader title="키링 등록하기" onBack={onBack} />
       <Content>
         <Title id={titleId}>등록 코드</Title>
         <Description id={descriptionId}>
@@ -76,7 +76,7 @@ export default function NfcCodePage({ onNext, onBack, onPrevious }) {
           onBackClick={onPrevious}
           step={2}
           totalSteps={3}
-          progressLabel="NFC 키링 등록 단계"
+          progressLabel="키링 등록 단계"
         />
       </Content>
     </OnboardingLayout>

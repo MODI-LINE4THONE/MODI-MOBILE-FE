@@ -1,17 +1,8 @@
 import { useEffect } from 'react'
 import styled from 'styled-components'
 import OnboardingLayout from '../../components/onboarding/OnboardingLayout'
-import { onboardingColors } from '../../styles/onboarding/colors'
+import { splashBackground } from '../../styles/onboarding/backgrounds'
 import modiLogo from '../../assets/images/modi-logo.png'
-
-const { background, gradientBlue } = onboardingColors
-
-// 흰색 바탕 + 왼쪽 위 / 오른쪽 아래 연한 파랑
-const splashBackground = `
-  radial-gradient(ellipse 90% 45% at 0% 0%, ${gradientBlue} 0%, ${gradientBlue}00 100%),
-  radial-gradient(ellipse 90% 45% at 100% 100%, ${gradientBlue} 0%, ${gradientBlue}00 100%),
-  ${background}
-`
 
 const Content = styled.div`
   display: flex;
