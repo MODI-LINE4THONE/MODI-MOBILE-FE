@@ -56,13 +56,14 @@ export default function KeyringManageLayout({
   onBack,
   onConnectClick,
   onLostClick,
+  information,
 }) {
   return (
     <OnboardingLayout>
       <OnboardingHeader title="키링 관리" onBack={onBack} />
       <Content>
         <Title>{title}</Title>
-        <InfoCard keyringId={keyringId} registeredAt={registeredAt} photo={photo} size="manage" />
+        {information !== undefined ? information : <InfoCard keyringId={keyringId} registeredAt={registeredAt} photo={photo} size="manage" />}
         <MenuList>
           <KeyringMenuCard
             icon={linkIcon}
