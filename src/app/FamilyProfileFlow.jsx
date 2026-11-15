@@ -1,4 +1,8 @@
-import { useLayoutEffect } from 'react'
+import { familyApi } from '../features/family/familyApi.js'
+import avatar from '../assets/images/avatar-mother.png'
+import OnboardingLayout from '../components/onboarding/OnboardingLayout'
+import OnboardingHeader from '../components/onboarding/OnboardingHeader'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { Navigate, useLocation, useNavigate, useParams, useSearchParams } from 'react-router'
 import FamilyProfilePage from '../pages/family/FamilyProfilePage'
 import { useFamilies } from './FamilyContext'
@@ -52,6 +56,7 @@ function FamilyProfileScreen({ devPreview }) {
 
   const previewSearch = devPreview ? `?preview=${devPreview.target}` : ''
   const homePath = `${HOME_PATH}${previewSearch}`
+  if (!devPreview) return <RemoteFamilyDetail id={familyId} />
   const family = findFamilyWithKeyring(profiles, familyId)
   if (!family) return <Navigate to={homePath} replace />
 
@@ -65,6 +70,20 @@ function FamilyProfileScreen({ devPreview }) {
   const goKeyring = () => navigate(`${familyKeyringPath(family.id)}${previewSearch}`)
 
   return <FamilyProfilePage profile={family} onBack={goBack} onKeyringClick={goKeyring} onSettingsClick={() => navigate(`/accessibility?familyId=${encodeURIComponent(familyId)}${devPreview ? '&preview=family' : ''}`)} />
+}
+
+function RemoteFamilyDetail({ id }) {
+  const [family, setFamily] = useState(null)
+  const [error, setError] = useState('')
+  const navigate = useNavigate()
+  useEffect(() => {
+    let active = true
+    setFamily(null); setError('')
+    familyApi.detail(id).then(profile => { if (active) setFamily({ ...profile, avatar }) }).catch(err => { if (active) setError(err.message) })
+    return () => { active = false }
+  }, [id])
+  if (!family) return <OnboardingLayout><OnboardingHeader title="가족 프로필 상세" onBack={() => navigate('/home')} /><p style={{ padding: '0 25px' }} role={error ? 'alert' : 'status'}>{error || '프로필을 불러오는 중입니다.'}</p></OnboardingLayout>
+  return <FamilyProfilePage profile={family} onBack={() => navigate('/home')} onKeyringClick={() => navigate(`/keyrings/family/${id}?profileId=${id}`)} onSettingsClick={() => navigate(`/accessibility?profileId=${id}`)} />
 }
 
 // 개발용 확인 주소면 로그인 확인을 건너뛰고, 아니면 로그인 확인 뒤 화면

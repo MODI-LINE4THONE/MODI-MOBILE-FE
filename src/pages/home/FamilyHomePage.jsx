@@ -54,30 +54,26 @@ const noop = () => {}
 
 // 가족 홈
 // userId: 인사말에 보일 아이디 (로그인할 때 입력한 아이디)
-// hasNewNotification: 새 알림이 있으면 종 아이콘에 파란 점
 // profiles: 가족 프로필 목록 (features/family/familyProfiles.js 모양)
 // onProfileClick(profile) / onAddClick: 카드·"가족 프로필 추가"를 누르면 호출 (없으면 동작 없음)
-// onNotificationClick: 알림 종을 누르면 호출 (없으면 누름 효과만)
 export default function FamilyHomePage({
   userId = 'user01',
-  hasNewNotification = false,
   profiles = [],
+  loading = false,
+  error = '',
   onProfileClick,
   onAddClick,
-  onNotificationClick,
 }) {
   return (
     <Layout>
-      <HomeHeader
-        hasNewNotification={hasNewNotification}
-        onNotificationClick={onNotificationClick}
-      />
+      <HomeHeader />
       <Greeting>
         {userId}님, 반가워요.
         <br />
         MODI로 가족의 키오스크 이용을 도와요.
       </Greeting>
       <ScrollArea>
+        {loading ? <p role="status">가족 프로필을 불러오는 중입니다.</p> : error ? <p role="alert">{error}</p> : profiles.length === 0 ? <p>등록된 가족 프로필이 없습니다.</p> : null}
         <CardList aria-label="가족 프로필">
           {profiles.map((profile) => (
             <li key={profile.id}>
