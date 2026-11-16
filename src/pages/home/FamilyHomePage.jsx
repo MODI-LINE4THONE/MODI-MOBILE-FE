@@ -66,7 +66,7 @@ export default function FamilyHomePage({
 }) {
   return (
     <Layout>
-      <HomeHeader />
+      <HomeHeader target="family" />
       <Greeting>
         {userId}님, 반가워요.
         <br />
