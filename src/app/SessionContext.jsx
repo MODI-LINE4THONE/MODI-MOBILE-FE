@@ -1,3 +1,4 @@
+import { logout } from '../features/auth/logout.js'
 import { completeOnboardingRequest } from '../features/onboarding/completeOnboarding.js'
 import { readSession, writeSession, subscribeSession } from '../features/auth/sessionStorage.js'
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
@@ -49,6 +50,7 @@ export function SessionProvider({ children }) {
       userId,
       onboardingCompleted,
       logIn,
+      logOut: logout,
       completeOnboarding,
       profile,
       setProfile,
