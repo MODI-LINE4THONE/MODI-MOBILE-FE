@@ -1,9 +1,10 @@
+import { completeOnboardingRequest } from '../features/onboarding/completeOnboarding.js'
 import { readSession, writeSession, subscribeSession } from '../features/auth/sessionStorage.js'
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { login } from '../features/auth/authApi'
 
 // 인증 정보는 같은 탭의 sessionStorage에서 복원합니다.
-// 온보딩 완료는 현재 세션에서만 표시하며 서버 저장은 명세 확인 후 연결합니다.
+// 온보딩 완료 여부와 사용자 유형은 로그인 시 서버에서 조회합니다.
 
 const SessionContext = createContext(null)
 
@@ -29,16 +30,18 @@ export function SessionProvider({ children }) {
 
   const logIn = useCallback(async (credentials) => {
     const result = await login(credentials)
-    setProfile({ target: null, nickname: '' })
+    setProfile(result.profile)
     setKeyring(null)
     setUserId(result.userId)
     setOnboardingCompleted(result.onboardingCompleted)
     return result
   }, [])
 
-  // 화면은 저장 결과를 기다리지 않고 바로 완료로 바뀐다 (실패 처리는 서버 연결 때 정한다)
-  const completeOnboarding = useCallback(() => {
-    setOnboardingCompleted(true)
+  // 서버 완료 저장이 성공한 뒤에만 현재 탭의 완료 상태를 변경한다.
+  const completeOnboarding = useCallback(async () => {
+    const user = await completeOnboardingRequest()
+    setProfile(current => ({ ...current, target: user.userType === 'SELF' ? 'self' : 'family' }))
+    setOnboardingCompleted(user.onboardingCompleted)
   }, [])
 
   const value = useMemo(

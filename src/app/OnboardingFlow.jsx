@@ -1,3 +1,4 @@
+import { userApi } from '../features/onboarding/userApi.js'
 import { onboardingApi } from '../features/onboarding/onboardingApi.js'
 import { useCallback, useLayoutEffect, useRef, useState } from 'react'
 import { Navigate, Outlet, useLocation, useNavigate, useOutletContext } from 'react-router'
@@ -121,6 +122,9 @@ function OnboardingFlow() {
   } else if (userId && screen?.needsLogin) {
     // 주소로 들어왔을 때 (로그인 아이디가 없으면 RequireLogin이 02로 보낸다)
     if (onboardingCompleted) return <Navigate to={HOME_PATH} replace />
+    if (screen === SCREENS.profile && profile.profileId && profile.target) {
+      return <Navigate to={SCREENS.nfcGuide.path} replace />
+    }
     if (screen.needsProfile && !profile.target) {
       return <Navigate to={SCREENS.profile.path} replace />
     }
@@ -165,12 +169,21 @@ function useFinishOnboarding(screenName) {
   const { setLeavingScreen } = useOutletContext()
   const navigate = useNavigate()
   const hasPrevious = useLocation().key !== 'default'
-  return () => {
-    setLeavingScreen(SCREENS[screenName])
-    completeOnboarding()
-    if (hasPrevious) navigate(-1)
-    else navigate(HOME_PATH, { replace: true })
+  const [pending, setPending] = useState(false)
+  const [error, setError] = useState('')
+  const busy = useRef(false)
+  const finish = async () => {
+    if (busy.current) return
+    busy.current = true; setPending(true); setError('')
+    try {
+      await completeOnboarding()
+      setLeavingScreen(SCREENS[screenName])
+      if (hasPrevious) navigate(-1)
+      else navigate(HOME_PATH, { replace: true })
+    } catch (err) { setError(err.message || '온보딩 완료를 저장하지 못했습니다. 다시 시도해주세요.') }
+    finally { busy.current = false; setPending(false) }
   }
+  return { finish, pending, error }
 }
 
 // ── 화면별 연결 ──────────────────────────────────────────────
@@ -193,8 +206,9 @@ function LoginScreen() {
     if (loggingIn.current) return
     loggingIn.current = true
     try {
-      const { onboardingCompleted } = await logIn(credentials)
+      const { onboardingCompleted, profile } = await logIn(credentials)
       if (onboardingCompleted) navigate(HOME_PATH, { replace: true })
+      else if (profile.profileId) go('nfcGuide', { replace: true })
       else go('start', { replace: true })
     } finally {
       loggingIn.current = false
@@ -212,9 +226,9 @@ function SignupScreen() {
 
 // 04 시작: "시작하기" → 05
 function StartScreen() {
-  const { userId } = useSession()
+  const { userId, profile } = useSession()
   const { go } = useScreenNav()
-  return <StartPage userId={userId} onStart={() => go('profile')} />
+  return <StartPage userId={userId} onStart={() => go(profile.profileId ? 'nfcGuide' : 'profile')} />
 }
 
 // 05 프로필 만들기: 화살표 → 04 / "다음" → 06 / "이전으로" → 04
@@ -228,7 +242,7 @@ function ProfileScreen() {
       initialNickname={profile.nickname}
       onBack={toStart}
       onNext={async (value) => {
-        const saved = await onboardingApi.saveProfile(value, { userId, profileId: profile.profileId })
+        const saved = await userApi.start(value, userId)
         setProfile(saved)
         go('nfcGuide', { replace: true })
       }}
@@ -240,12 +254,14 @@ function ProfileScreen() {
 // 06 키링 등록 방법: 화살표 → 04 / "다음" → 07 / "나중에" → 온보딩 완료 + 홈 (키링 없음)
 function NfcGuideScreen() {
   const { go, goBackTo } = useScreenNav()
-  const finishOnboarding = useFinishOnboarding('nfcGuide')
+  const completion = useFinishOnboarding('nfcGuide')
   return (
     <NfcGuidePage
       onBack={() => goBackTo('start')}
       onNext={() => go('nfcCode', { replace: true })}
-      onLater={finishOnboarding}
+      onLater={completion.finish}
+      pending={completion.pending}
+      error={completion.error}
     />
   )
 }
@@ -283,14 +299,16 @@ function NfcCodeScreen() {
 function NfcCompleteScreen() {
   const { keyring } = useSession()
   const { goBackTo } = useScreenNav()
-  const finishOnboarding = useFinishOnboarding('nfcComplete')
+  const completion = useFinishOnboarding('nfcComplete')
   if (!keyring?.connected) return <Navigate to={SCREENS.nfcCode.path} replace />
   return (
     <NfcCompletePage
       keyringId={keyring.keyringId}
       registeredAt={keyring.registeredAt}
       onBack={() => goBackTo('start')}
-      onHome={finishOnboarding}
+      onHome={completion.finish}
+      pending={completion.pending}
+      error={completion.error}
     />
   )
 }

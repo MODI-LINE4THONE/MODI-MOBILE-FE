@@ -70,10 +70,10 @@ const GuideItem = styled.li`
 `
 
 // onBack: 뒤로가기 화살표 / onNext: "다음" / onLater: "나중에" (키링 등록을 건너뛰고 온보딩 완료)
-export default function NfcGuidePage({ onBack, onNext, onLater }) {
+export default function NfcGuidePage({ onBack, onNext, onLater, pending = false, error = '' }) {
   return (
     <OnboardingLayout>
-      <OnboardingHeader title="키링 등록하기" onBack={onBack} />
+      <OnboardingHeader title="키링 등록하기" onBack={pending ? undefined : onBack} />
       <Content>
         <Title>등록 방법</Title>
         <KeyringImage src={keyringImage} alt="MODI NFC 키링. 뒷면에 등록 코드가 적혀 있어요." />
@@ -83,10 +83,12 @@ export default function NfcGuidePage({ onBack, onNext, onLater }) {
             <GuideItem key={text}>{text}</GuideItem>
           ))}
         </GuideList>
+        {error && <p role="alert">{error}</p>}
         <OnboardingFooter
           primaryLabel="다음"
-          onPrimaryClick={onNext}
-          backLabel="나중에"
+          onPrimaryClick={() => { if (!pending) onNext?.() }}
+          primaryDisabled={pending}
+          backLabel={pending ? '저장 중…' : '나중에'}
           onBackClick={onLater}
           step={1}
           totalSteps={3}

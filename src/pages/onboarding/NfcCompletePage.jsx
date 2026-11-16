@@ -45,16 +45,20 @@ export default function NfcCompletePage({
   registeredAt = DEFAULT_REGISTERED_AT,
   onBack,
   onHome,
+  pending = false,
+  error = '',
 }) {
   return (
     <OnboardingLayout>
-      <OnboardingHeader title="키링 등록하기" onBack={onBack} />
+      <OnboardingHeader title="키링 등록하기" onBack={pending ? undefined : onBack} />
       <Content>
         <Title>등록 완료</Title>
         <Description>키링이 정상적으로 등록되었습니다.</Description>
         <ResultCard keyringId={keyringId} registeredAt={registeredAt} size="complete" />
+        {error && <p role="alert">{error}</p>}
         <OnboardingFooter
-          primaryLabel="홈으로 이동"
+          primaryLabel={pending ? '저장 중…' : '홈으로 이동'}
+          primaryDisabled={pending}
           onPrimaryClick={onHome}
           showBack={false}
           step={3}
