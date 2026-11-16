@@ -3,16 +3,16 @@ import assert from 'node:assert/strict'
 import { login, signup, checkId } from './authApi.js'
 import { apiRequest, setAccessToken } from '../api/client.js'
 
-test('로그인 필드 변환, 토큰 전달, 완료 여부 보류', async () => {
+test('로그인 필드 변환, 토큰 전달, 서버 완료 여부 조회', async () => {
   const original = globalThis.fetch
   const requests = []
   globalThis.fetch = async (url, options) => {
     requests.push({ url, ...options })
-    return Response.json({ success: true, data: { accessToken: 'test-token' } })
+    return Response.json({ success: true, data: url.endsWith('/api/users/me') ? { userId: 1, loginId: 'user01', userType: 'GUARDIAN', onboardingCompleted: true } : { accessToken: 'test-token' } })
   }
   try {
     assert.deepEqual(await login({ userId: 'user01', password: 'secret' }), {
-      userId: 'user01', onboardingCompleted: false,
+      userId: 'user01', onboardingCompleted: true, profile: { target: 'family', nickname: '' },
     })
     await apiRequest('/api/profiles/me')
     assert.deepEqual(JSON.parse(requests[0].body), { loginId: 'user01', password: 'secret' })
