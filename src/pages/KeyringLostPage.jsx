@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router'
 import { useFamilies } from '../app/FamilyContext'
 import { useSession } from '../app/SessionContext'
-import { formatKoreanDate, formatKoreanTime } from '../utils/formatDateTime'
+import { formatKoreanDate, formatKoreanTime, parseRegisteredAt } from '../utils/formatDateTime'
 import styled from 'styled-components'
 import KeyringFlowLayout, { Title, Description, Notice, usePreviewSearch } from '../components/keyring/KeyringFlowLayout'
 import { readPreviewKeyring, disablePreviewKeyring } from '../features/keyring/previewKeyring'
@@ -78,7 +78,7 @@ function LostEditor({ family, serverProfile, serverKeyring }) {
   const [ownKeyring, setKeyring] = useState(() => serverKeyring ? { id: serverKeyring.keyringId, status: serverKeyring.status } : readPreviewKeyring())
   const { disableFamilyKeyring } = useFamilies()
   const keyring = family ? { id: family.keyring.keyringId, status: family.keyring.status ?? 'active' } : ownKeyring
-  const registeredAt = serverKeyring ? null : family?.keyring.registeredAt ?? new Date(2026, 10, 3, 15, 29)
+  const registeredAt = parseRegisteredAt(serverKeyring ? serverKeyring.registeredAt : family?.keyring.registeredAt ?? new Date(2026, 10, 3, 15, 29))
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [pending, setPending] = useState(false)
@@ -107,7 +107,7 @@ function LostEditor({ family, serverProfile, serverKeyring }) {
   }
   return <KeyringFlowLayout title="키링 분실" onBack={() => location.state?.fromKeyring ? navigate(-1) : navigate(family ? `/keyrings/family/${encodeURIComponent(family.id)}${search}` : `/keyrings${search}`, { replace: true })}>
     <Title>키링을 분실하셨나요?</Title><Description>걱정하지 마세요. 기존 설정은 안전하게 보관됩니다.<br />분실한 키링을 즉시 비활성화하고<br />새 키링에 기존 설정을 그대로 옮길 수 있어요.</Description>
-    {(family || serverProfile) && <Notice>{(family ?? serverProfile).name}님의 키링</Notice>}<Card $lost={lost}><Row><Avatar $family={!!family}><img src={family?.avatar ?? avatar} alt="" /></Avatar><Details><dt>키링 ID</dt><dd>{keyring.id}</dd><dt>등록 일시</dt><dd>{registeredAt ? <>{formatKoreanDate(registeredAt)}<br />{formatKoreanTime(registeredAt)}</> : '서버 정보 없음'}</dd></Details></Row><Disable ref={trigger} disabled={lost || pending} onClick={() => { setError(''); dialog.current.showModal() }}>{!lost && <img src={lock} alt="" />}{lost ? '비활성화된 키링입니다.' : '분실 키링 비활성화'}</Disable><Warning>비활성화된 키링으로 키오스크 화면을 변경할 수 없어요.</Warning></Card>
+    {(family || serverProfile) && <Notice>{(family ?? serverProfile).name}님의 키링</Notice>}<Card $lost={lost}><Row><Avatar $family={!!family}><img src={family?.avatar ?? avatar} alt="" /></Avatar><Details><dt>키링 ID</dt><dd>{keyring.id}</dd><dt>등록 일시</dt><dd>{registeredAt ? <>{formatKoreanDate(registeredAt)}<br />{formatKoreanTime(registeredAt)}</> : '등록 일시 정보 없음'}</dd></Details></Row><Disable ref={trigger} disabled={lost || pending} onClick={() => { setError(''); dialog.current.showModal() }}>{!lost && <img src={lock} alt="" />}{lost ? '비활성화된 키링입니다.' : '분실 키링 비활성화'}</Disable><Warning>비활성화된 키링으로 키오스크 화면을 변경할 수 없어요.</Warning></Card>
     <Menu onClick={() => navigate(`/keyrings/issuance${search}`)}><img src={issue} alt="" /><span><strong>새 키링 발급받기</strong><small>새로운 키링을 택배로 받아요.</small></span></Menu>
     <Menu onClick={() => navigate(`/keyrings/connect${search}`)}><img src={connect} alt="" /><span><strong>새 키링 연결하기</strong><small>새로운 키링을 어플과 연결해요.</small></span></Menu>
     <Notice>{serverKeyring ? '분실 처리 결과는 실제 키링에 반영됩니다.' : '예시 데이터 미리보기 · 실제 키링은 변경되지 않습니다.'}</Notice><div role="status">{message && <Notice>{message}</Notice>}</div>

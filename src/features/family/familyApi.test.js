@@ -9,9 +9,9 @@ test('서버 설정·키링 상태를 기존 가족 카드 데이터로 변환�
   assert.equal(empty.status, 'pending')
   assert.equal(empty.keyring, null)
   assert.deepEqual(empty.enabledSettings, ['큰 글씨', '터치 위치 안내'])
-  const active = toFamily(profile, [{ keyringId: 4, status: 'LOST' }, { keyringId: 5, registrationCode: 'AB1234', status: 'REGISTERED' }])
+  const active = toFamily(profile, [{ keyringId: 4, status: 'LOST' }, { keyringId: 5, registrationCode: 'AB1234', status: 'REGISTERED', registeredAt: '2026-11-17T12:30:00+09:00' }])
   assert.equal(active.keyring.keyringId, 5)
-  assert.equal(active.keyring.registeredAt, null)
+  assert.equal(active.keyring.registeredAt, '2026-11-17T12:30:00+09:00')
 })
 test('확인된 본인 ID만 제외하고 프로필별 키링을 조회한다', async () => {
   const ids = []

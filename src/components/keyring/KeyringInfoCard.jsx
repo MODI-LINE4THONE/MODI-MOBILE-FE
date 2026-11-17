@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import IconCard from '../onboarding/IconCard'
 import { onboardingColors } from '../../styles/onboarding/colors'
-import { formatKoreanDate, formatKoreanTime, toDateTimeAttribute } from '../../utils/formatDateTime'
+import { formatKoreanDate, formatKoreanTime, toDateTimeAttribute, parseRegisteredAt } from '../../utils/formatDateTime'
 import keyringIcon from '../../assets/icons/icon-keyring.svg'
 
 // 07 정보가 없을 때(화면만 따로 열었을 때) 보여 줄 기본값 (08 디자인 값)
@@ -90,6 +90,7 @@ export default function KeyringInfoCard({
 }) {
   const { height, circleSize, paddingLeft, gap, iconWidth, iconOffsetY, bodyOffsetY } =
     KEYRING_CARD_SIZE[size]
+  const date = parseRegisteredAt(registeredAt)
   const Card = photo ? PhotoCard : IconCard
 
   return (
@@ -111,10 +112,10 @@ export default function KeyringInfoCard({
         <InfoValue>{keyringId}</InfoValue>
         <InfoLabel>등록 일시</InfoLabel>
         <InfoValue>
-          {registeredAt === null ? '서버 정보 없음' : <time dateTime={toDateTimeAttribute(registeredAt)}>
-            {formatKoreanDate(registeredAt)}
+          {!date ? '등록 일시 정보 없음' : <time dateTime={toDateTimeAttribute(date)}>
+            {formatKoreanDate(date)}
             <br />
-            {formatKoreanTime(registeredAt)}
+            {formatKoreanTime(date)}
           </time>}
         </InfoValue>
       </InfoList>
