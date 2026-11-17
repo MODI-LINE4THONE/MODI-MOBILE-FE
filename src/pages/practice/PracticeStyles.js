@@ -65,11 +65,44 @@ export const Stage = styled.section`
   > [data-product] { margin-top: 10px; }
   button:focus-visible { outline-color: ${({ $options }) => $options.highContrast ? 'white' : '#2456e8'}; }
 
+  &[data-large='true'] {
+    --place-size: 36px;
+    --category-size: 28px;
+    --option-size: 28px;
+    --action-size: 38px;
+    font-size: 32px;
+    [data-product] { padding: 10px; gap: 5px; }
+    [data-product] > div { min-width: 0; }
+    [data-product] strong { font-size: 36px; line-height: 40px; letter-spacing: -1.2px; }
+    [data-product] p { font-size: 28px; line-height: 38px; letter-spacing: -1px; }
+    &[data-step='options'] [data-product] strong { font-size: 28px; line-height: 34px; }
+    &[data-step='options'] [data-product] { gap: 5px; }
+    &[data-step='add'] [data-product] { min-height: 118px; align-items: flex-start; }
+    &[data-step='cart'] [data-product] { padding-right: 42px; align-items: flex-start; box-shadow: none; }
+    &[data-step='cart'] [data-product] strong { white-space: nowrap; }
+    &[data-step='cart'] [data-product] p { margin-top: 0; }
+    &[data-step='cart'] > div:last-child > button { min-height: 110px; padding: 4px; font-size: 36px !important; letter-spacing: -3px; }
+    &[data-step='card'] p { font-size: 32px; line-height: 38px; max-width: 250px; }
+    &[data-step='order'] p { font-size: 36px; line-height: 40px; }
+  }
+
 `
 export const ChoiceColumns = styled.div`display: grid; grid-template-columns: repeat(${({ $count }) => $count ?? 2}, minmax(0, 1fr)); gap: 8px;`
-export const PlaceGrid = styled(ChoiceColumns)`flex: 1; button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 356px; font-size: 18px !important; }`
-export const Categories = styled.div`display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; margin-bottom: 13px; button { min-height: 54px; display: flex; align-items: center; justify-content: center; gap: 3px; font-size: 14px !important; padding: 4px 2px; }`
-export const MenuGrid = styled.div`display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 7px; overflow: auto; flex: 1; padding: 1px; button { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 140px; padding: 10px 4px; font-size: inherit; line-height: 20px; > span:last-child { margin-top: 7px; font-size: .875em; } }`
+export const PlaceGrid = styled(ChoiceColumns)`flex: 1; button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 356px; font-size: var(--place-size, 18px) !important; }`
+export const Categories = styled.div`
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; margin-bottom: 13px;
+  button { min-height: 54px; display: flex; align-items: center; justify-content: center; gap: 3px; font-size: var(--category-size, 14px) !important; letter-spacing: -1px; padding: 4px 2px; }
+  [data-large='true'] & {
+    display: flex; flex-shrink: 0; overflow-x: auto; padding: 2px;
+    button { flex: 1 0 auto; padding: 4px 6px; white-space: nowrap; line-height: 1.3; }
+  }
+`
+export const MenuGrid = styled.div`
+  [data-large='true'] & { min-height: 0; grid-auto-rows: max-content; align-content: start; }
+  [data-large='true'] & button { min-width: 0; min-height: 168px; padding: 10px 6px; line-height: 34px; }
+  [data-large='true'] & button > span:last-child { width: 100%; min-width: 0; font-size: 26px; letter-spacing: -1px; margin-top: 6px; word-break: keep-all; overflow-wrap: anywhere; }
+  [data-large='true'] & [data-price] { font-size: 28px; white-space: nowrap; }
+display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 7px; overflow: auto; flex: 1; padding: 1px; button { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 140px; padding: 10px 4px; font-size: inherit; line-height: 20px; > span:last-child { margin-top: 7px; font-size: .875em; } }`
 export const Picture = styled.span`
   position: relative; display: block; flex-shrink: 0; width: ${({ $size }) => $size ?? 70}px; height: ${({ $size }) => $size ?? 70}px;
   > span { display: block; width: 70px; height: 70px; overflow: hidden; border-radius: 50%; position: absolute; top: 0; left: 0; transform: scale(${({ $size }) => ($size ?? 70) / 70}); transform-origin: top left; }
@@ -79,18 +112,22 @@ export const ProductRow = styled.div.attrs({ 'data-product': true })`
   display: flex; align-items: center; gap: 12px; min-height: 80px; padding: 10px 20px; border-radius: 15px; background: var(--surface); color: var(--ink); box-shadow: inset 0 0 4px var(--outline);
   strong { font-weight: 500; line-height: 24px; } p { margin: 4px 0 0; color: var(--muted); font-size: .875em; line-height: 22px; }
 `
-export const FieldLabel = styled.p`margin: 18px 0 10px; font-size: .875em; line-height: 22px; color: ${({ $contrast }) => $contrast ? '#ffffff' : 'inherit'};`
-export const OptionsGrid = styled(ChoiceColumns)`button { min-height: 80px; padding: 8px 4px; line-height: 22px; font-size: .875em !important; }`
+export const FieldLabel = styled.p`[data-large='true'] & { font-size: 28px; line-height: 34px; margin: 8px 0; }margin: 18px 0 10px; font-size: .875em; line-height: 22px; color: ${({ $contrast }) => $contrast ? '#ffffff' : 'inherit'};`
+export const OptionsGrid = styled(ChoiceColumns)`button { min-height: 80px; padding: 8px 4px; line-height: 1.2; font-size: var(--option-size, .875em) !important; }`
 export const Quantity = styled.div`
+  [data-large='true'] & { gap: 8px; font-size: 40px; line-height: 48px; letter-spacing: -1px; }
+  [data-large='true'] & button { width: 34px; flex-shrink: 0; }
+  [data-large='true'] & strong { font-size: clamp(24px, 10vw, 40px); }
+
   display: flex; align-items: center; gap: 12px;
   button { display: grid; place-items: center; width: 36px; height: 32px; font-size: 24px !important; line-height: 28px; border-radius: 18px; }
   > strong { margin-left: auto; font-weight: 500; color: ${({ $contrast }) => $contrast ? '#ffffff' : 'inherit'}; }
   > output { color: ${({ $contrast }) => $contrast ? '#ffffff' : 'inherit'}; }
 `
-export const WideAction = styled.button`width: 100%; min-height: 54px; margin-top: auto; padding: 10px; font-size: 18px !important;`
-export const CartItem = styled.div`position: relative; background: var(--surface); padding: 0 0 12px; border-radius: 15px; box-shadow: inset 0 0 4px var(--outline); margin-bottom: 10px; > button { position: absolute !important; right: 10px; top: 10px; display: grid; place-items: center; width: 32px; height: 32px; padding: 0; } > p { margin: 0 16px; text-align: right; color: var(--muted); font-size: 1.125em; }`
-export const CartItems = styled.div`max-height: 240px; overflow: auto;`
-export const Total = styled.p`display: flex; justify-content: space-between; gap: 8px; margin: 12px 0; font-size: .875em; color: ${({ $contrast }) => $contrast ? '#ffffff' : 'inherit'}; strong { color: ${({ $contrast }) => $contrast ? '#ffee00' : '#2456e8'}; font-size: 1.25em; font-weight: 500; }`
+export const WideAction = styled.button`width: 100%; min-height: 54px; margin-top: auto; padding: 10px; font-size: var(--action-size, 18px) !important; line-height: 1.2; letter-spacing: -1px;`
+export const CartItem = styled.div`[data-large='true'] & { padding-bottom: 8px; } [data-large='true'] & > p { display: none; }position: relative; background: var(--surface); padding: 0 0 12px; border-radius: 15px; box-shadow: inset 0 0 4px var(--outline); margin-bottom: 10px; > button { position: absolute !important; right: 10px; top: 10px; display: grid; place-items: center; width: 32px; height: 32px; padding: 0; } > p { margin: 0 16px; text-align: right; color: var(--muted); font-size: 1.125em; }`
+export const CartItems = styled.div`[data-large='true'] & { max-height: 160px; flex-shrink: 1; }max-height: 240px; overflow: auto;`
+export const Total = styled.p`[data-large='true'] & { font-size: 28px; line-height: 48px; align-items: center; letter-spacing: -1px; white-space: nowrap; strong { font-size: 40px; } }display: flex; justify-content: space-between; gap: 8px; margin: 12px 0; font-size: .875em; color: ${({ $contrast }) => $contrast ? '#ffffff' : 'inherit'}; strong { color: ${({ $contrast }) => $contrast ? '#ffee00' : '#2456e8'}; font-size: 1.25em; font-weight: 500; }`
 export const Payments = styled.div`display: grid; gap: 18px; margin: 10px 0; button { display: flex; align-items: center; justify-content: center; gap: 5px; min-height: 100px; padding: 12px; }`
 export const Center = styled.div`display: flex; flex: 1; flex-direction: column; justify-content: center; align-items: center; gap: 14px; text-align: center; p { margin: 0; line-height: 24px; } strong { font-weight: 500; }`
 export const CardButton = styled.button`display: grid; place-items: center; border: 0; width: 168px; height: 168px; border-radius: 50%; background: ${({ $paid }) => $paid ? '#dee1e9' : 'transparent'}; > img { width: 113px; height: 117px; }`
