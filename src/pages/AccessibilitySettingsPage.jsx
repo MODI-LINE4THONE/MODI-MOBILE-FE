@@ -108,7 +108,9 @@ function SettingsEditor({ family, serverProfile }) {
   const navigate = useNavigate()
   const location = useLocation()
   const preview = import.meta.env.DEV ? new URLSearchParams(location.search).get('preview') : null
-  const homePath = family ? `/families/${encodeURIComponent(family.id)}${preview === 'family' ? '?preview=family' : ''}` : preview === 'self' ? '/home?preview=self' : '/home'
+  const returnToPractice = new URLSearchParams(location.search).get('returnTo') === 'practice'
+  const practiceSearch = new URLSearchParams({ ...(serverProfile ? { profileId: String(serverProfile.profileId) } : {}), ...(preview === 'self' ? { preview: 'self' } : {}) })
+  const homePath = returnToPractice ? `/practice${practiceSearch.size ? '?' + practiceSearch : ''}` : family ? `/families/${encodeURIComponent(family.id)}${preview === 'family' ? '?preview=family' : ''}` : preview === 'self' ? '/home?preview=self' : '/home'
   const changed = settingsChanged(value, saved)
   useEffect(() => { const previous = document.title; document.title = '접근성 설정 - MODI'; mainRef.current?.focus(); window.scrollTo(0, 0); return () => { document.title = previous } }, [])
   async function save() {
@@ -155,6 +157,6 @@ function SettingsEditor({ family, serverProfile }) {
       </fieldset>
       <Footer $custom={value.mode === 'custom'}><PrimaryButton ref={saveRef} disabled={!changed || pending} onClick={save}>{pending ? '저장 중…' : '이 조합으로 저장하기'}</PrimaryButton><Notice>{serverProfile ? `${serverProfile.name}님의 설정을 서버에 저장합니다.` : family ? '가족 설정은 현재 미리보기 세션에만 반영됩니다.' : '현재 설정은 이 브라우저에만 저장됩니다.'}</Notice>{error && <Notice role="alert">{error}</Notice>}</Footer>
     </Main>
-    <Dialog ref={dialogRef} aria-labelledby="saved-title" onClose={() => saveRef.current?.focus()}><img src={success} alt="" /><h2 id="saved-title">접근성 설정 저장 완료</h2><button type="button" autoFocus onClick={() => { dialogRef.current.close(); navigate(homePath, { replace: true }) }}>{family ? '프로필로 돌아가기' : '홈으로 돌아가기'}</button></Dialog>
+    <Dialog ref={dialogRef} aria-labelledby="saved-title" onClose={() => saveRef.current?.focus()}><img src={success} alt="" /><h2 id="saved-title">접근성 설정 저장 완료</h2><button type="button" autoFocus onClick={() => { dialogRef.current.close(); navigate(homePath, { replace: true }) }}>{returnToPractice ? '연습으로 돌아가기' : family ? '프로필로 돌아가기' : '홈으로 돌아가기'}</button></Dialog>
   </Layout>
 }

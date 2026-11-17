@@ -63,7 +63,7 @@ function HomeScreen({ devPreview }) {
       />
     )
   }
-  return <SelfHomePage {...commonProps} onKeyringClick={goKeyring} onSettingsClick={() => navigate(`/accessibility${devPreview ? '?preview=self' : ''}`, { state: { from: 'home' } })} />
+  return <SelfHomePage {...commonProps} onPracticeClick={() => navigate(`/practice${devPreview ? '?preview=self' : ''}`)} onKeyringClick={goKeyring} onSettingsClick={() => navigate(`/accessibility${devPreview ? '?preview=self' : ''}`, { state: { from: 'home' } })} />
 }
 
 // 개발용 확인 주소면 로그인 확인을 건너뛰고, 아니면 로그인 확인 뒤 홈
