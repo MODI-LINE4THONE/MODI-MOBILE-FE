@@ -52,6 +52,7 @@ export const Stage = styled.section`
   display: flex; flex-direction: column; flex-shrink: 0; position: relative; height: 396px; min-height: 396px;
   margin-top: 22px; padding: 20px 22px; border-radius: 30px; background: var(--panel); color: var(--ink); box-shadow: inset 0 0 4px var(--outline);
   font-size: 16px;
+  &[data-bottom='true'] { justify-content: flex-end; }
   [data-choice] { position: relative; border: 0; border-radius: 15px; background: var(--surface); color: var(--muted); box-shadow: inset 0 0 4px var(--outline); font-size: inherit; }
   [data-choice][aria-pressed='true'] { background: ${({ $options }) => $options.highContrast ? '#00e1ff' : '#e8effe'}; color: ${({ $options }) => $options.highContrast ? '#000' : '#2456e8'}; box-shadow: inset 0 0 4px #2456e8; }
   [data-choice][data-white] { background: ${({ $options }) => $options.highContrast ? '#ffee00' : 'white'}; color: var(--ink); }
@@ -131,6 +132,43 @@ export const Total = styled.p`[data-large='true'] & { font-size: 28px; line-heig
 export const Payments = styled.div`display: grid; gap: 18px; margin: 10px 0; button { display: flex; align-items: center; justify-content: center; gap: 5px; min-height: 100px; padding: 12px; }`
 export const Center = styled.div`display: flex; flex: 1; flex-direction: column; justify-content: center; align-items: center; gap: 14px; text-align: center; p { margin: 0; line-height: 24px; } strong { font-weight: 500; }`
 export const CardButton = styled.button`display: grid; place-items: center; border: 0; width: 168px; height: 168px; border-radius: 50%; background: ${({ $paid }) => $paid ? '#dee1e9' : 'transparent'}; > img { width: 113px; height: 117px; }`
+export const BottomContent = styled.div`
+  display: flex; flex-direction: column; flex: 0 1 auto; min-height: 0; max-height: 100%;
+  overflow-y: auto; padding: 2px;
+  ${PlaceGrid} { flex: none; button { min-height: 216px; } }
+  ${MenuGrid} {
+    flex: none; max-height: 151px; grid-auto-rows: minmax(64px, auto); align-content: start; padding-bottom: 16px;
+    button { min-height: 64px; flex-direction: row; justify-content: flex-start; gap: 7px; padding: 7px; text-align: left; line-height: 18px; }
+    button > span:last-child { margin: 0; min-width: 0; font-size: 14px; word-break: keep-all; overflow-wrap: anywhere; }
+  }
+  ${ProductRow} { min-height: 60px; padding: 5px 15px; }
+  ${FieldLabel} { margin: 10px 0; font-size: 14px; line-height: 18px; }
+  ${OptionsGrid} button { min-height: 38px; padding: 4px; line-height: 16px; }
+  ${Quantity} { margin: 8px 0 12px; strong { font-size: 20px; } }
+  ${WideAction} { min-height: 44px; margin-top: 0; padding: 8px; }
+  ${CartItems} { max-height: 164px; flex-shrink: 0; }
+  ${Total} { margin: 12px 0 16px; }
+  ${Payments} { gap: 12px; margin: 0 0 12px; button { min-height: 54px; } }
+  ${Center} { flex: none; margin-bottom: 18px; gap: 14px; }
+  [data-step='card'] & ${Center} { gap: 22px; margin-bottom: 20px; }
+  [data-step='card'] & ${Center} p { font-size: 14px; }
+  [data-large='true'] & {
+    ${MenuGrid} {
+      max-height: 254px; grid-auto-rows: max-content;
+      button { flex-direction: column; min-height: 168px; padding: 10px 6px; text-align: center; line-height: 34px; }
+      button > span:last-child { font-size: 26px; margin-top: 6px; }
+    }
+    ${FieldLabel} { font-size: 28px; line-height: 34px; margin: 8px 0; }
+    ${OptionsGrid} button { min-height: 66px; line-height: 1.2; }
+    ${Quantity} { font-size: 40px; strong { font-size: clamp(24px, 10vw, 40px); } }
+    ${Payments} button { min-height: 80px; }
+    ${WideAction} { min-height: 64px; }
+    ${CartItems} { max-height: 160px; }
+    ${CartItems} ${ProductRow} { padding-right: 42px; }
+    [data-step='cart'] & ${WideAction} { min-height: 86px; padding: 4px; font-size: 36px !important; letter-spacing: -3px; }
+    [data-step='card'] & ${Center} p { font-size: 32px; }
+  }
+`
 export const Help = styled.aside`
   display: flex; align-items: center; gap: 15px; min-height: 91px; padding: 11px 15px; margin-top: 12px; border-radius: 20px; background: ${c.cardBackground};
   > span { position: relative; display: grid; place-items: center; flex-shrink: 0; width: 70px; height: 70px; > img:first-child { position: absolute; top: 0; left: 0; } > img:last-child { position: relative; } }
