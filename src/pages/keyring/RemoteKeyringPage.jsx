@@ -28,7 +28,7 @@ function Keyrings({ profile }) {
     return () => { active = false }
   }, [profile.profileId])
   const information = <Information>
-    {error ? <EmptyCard role="alert">{error} 잠시 후 다시 방문해주세요.</EmptyCard> : rings === null ? <EmptyCard role="status">키링을 불러오는 중입니다.</EmptyCard> : rings.length === 0 ? <EmptyCard>연결된 키링이 없습니다.</EmptyCard> : rings.map(ring => <section key={ring.keyringId}><KeyringInfoCard keyringId={ring.keyringId} registeredAt={null} size="manage" /><Status>{statuses[ring.status]}</Status></section>)}
+    {error ? <EmptyCard role="alert">{error} 잠시 후 다시 방문해주세요.</EmptyCard> : rings === null ? <EmptyCard role="status">키링을 불러오는 중입니다.</EmptyCard> : rings.length === 0 ? <EmptyCard>연결된 키링이 없습니다.</EmptyCard> : rings.map(ring => <section key={ring.keyringId}><KeyringInfoCard keyringId={ring.keyringId} registeredAt={ring.registeredAt ?? null} size="manage" /><Status>{statuses[ring.status]}</Status></section>)}
   </Information>
   return <KeyringManageLayout
     title={`${profile.name}님의 키링`}

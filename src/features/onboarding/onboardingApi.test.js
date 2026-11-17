@@ -22,11 +22,11 @@ test('모든 영문 대문자·숫자 6자리 등록 후 서버 ID로 프로필 
   const calls = []
   const api = createOnboardingApi(async (path, options) => {
     calls.push({ path, ...options })
-    return path.endsWith('registrations') ? { keyringId: 7 } : { keyringId: 7, profileId: 12 }
+    return path.endsWith('registrations') ? { keyringId: 7, registeredAt: '2026-11-17T12:30:00+09:00' } : { keyringId: 7, profileId: 12 }
   })
   const ring = await api.registerKeyring('1A2B3C')
   assert.equal(ring.keyringId, 7)
-  assert.equal(ring.registeredAt, null)
+  assert.equal(ring.registeredAt, '2026-11-17T12:30:00+09:00')
   await api.connectKeyring(ring.keyringId, 12)
   assert.deepEqual(calls[1], { path: '/api/keyrings/7/profile', method: 'PATCH', body: { profileId: 12 } })
   await assert.rejects(api.registerKeyring('short'), /6자리/)

@@ -10,7 +10,7 @@ export function toFamily(profile, rings) {
     status: ring ? 'registered' : 'pending', settings,
     enabledSettings: optionDefinitions.filter(({ id }) => settings.options[id]).map(({ label }) => label),
     lastUsedText: ring ? '키링이 연결되어 있어요.' : '',
-    keyring: ring ? { keyringId: ring.keyringId, registrationCode: ring.registrationCode, status: ring.status, registeredAt: null } : null,
+    keyring: ring ? { keyringId: ring.keyringId, registrationCode: ring.registrationCode, status: ring.status, registeredAt: ring.registeredAt ?? null } : null,
   }
 }
 export function createFamilyApi(profiles = profileApi, onboarding = onboardingApi) {

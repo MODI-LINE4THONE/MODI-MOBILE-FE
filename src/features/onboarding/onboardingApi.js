@@ -33,7 +33,7 @@ export function createOnboardingApi(request = apiRequest) {
     async registerKeyring(code) {
       if (!/^[A-Z0-9]{6}$/.test(code)) throw new Error('영문 대문자·숫자 6자리를 입력해주세요.')
       const data = await request('/api/keyrings/registrations', { method: 'POST', body: { registrationCode: code } })
-      return { keyringId: readCreatedId(data, 'keyringId'), registrationCode: code, registeredAt: null }
+      return { keyringId: readCreatedId(data, 'keyringId'), registrationCode: code, registeredAt: data.registeredAt ?? null }
     },
     async connectKeyring(keyringId, profileId) {
       if (!Number.isSafeInteger(profileId) || profileId <= 0) throw new Error('프로필을 먼저 생성해주세요.')

@@ -1,5 +1,12 @@
 // 한국어 날짜·시간 표시 (24시간, 앞자리 0 없음)
 
+// API 문자열과 세션 복원 후의 문자열도 같은 방식으로 표시한다.
+export function parseRegisteredAt(value) {
+  if (!(value instanceof Date) && (typeof value !== 'string' || !value.trim())) return null
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? null : date
+}
+
 // 2026년 11월 3일
 export function formatKoreanDate(date) {
   return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`
