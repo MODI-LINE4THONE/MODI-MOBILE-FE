@@ -1,3 +1,4 @@
+import KioskPracticePage from './pages/practice/KioskPracticePage.jsx'
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router'
 import { onboardingRoutes } from './app/OnboardingFlow.jsx'
 import { homeRoutes } from './app/HomeFlow.jsx'
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
   keyringRoutes, // /keyrings (키링 관리)
   familyProfileRoutes, // /families/:familyId (가족 프로필 상세)
   { path: '/families/new', element: <FamilyAddPage /> },
+  { path: '/practice', element: <KioskPracticePage /> },
   { path: '/accessibility', element: <AccessibilitySettingsPage /> },
   { path: '/keyrings/lost', element: <KeyringLostPage /> },
   keyringIssuanceRoutes,
