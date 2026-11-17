@@ -25,6 +25,8 @@ export const onboardingColors = {
 
   // 입력창 아래 안내 문구 (예: "사용 가능한 아이디입니다.")
   fieldMessage: '#2456E8',
+  // 입력창 아래 오류 문구 (예: "아이디는 4~15자로 입력해주세요.")
+  fieldError: '#D92D20',
 
   // 팝업
   dimmed: 'rgba(25, 31, 40, 0.2)', // #191F28, 투명도 20%

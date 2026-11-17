@@ -106,6 +106,7 @@ const ActionButton = styled.button.attrs({ type: 'button' })`
 // 입력창 아래 안내 문구: 12px, 상자 높이 14, 입력창과 9 떨어짐, 상자 x 28.
 // 입력창 아래 공간에 겹쳐 놓아서(absolute) 문구가 생겨도 아래 부분이 움직이지 않는다.
 // 문구 칸은 비어 있을 때도 늘 그려 둔다 → 화면 읽기 프로그램이 새 문구를 읽어 준다(role=status).
+// 문구는 항상 한 줄(줄바꿈 없음). 안내는 파란색, 오류(tone='error')는 빨간색.
 const Message = styled.p`
   position: absolute;
   top: calc(100% + 9px);
@@ -113,10 +114,12 @@ const Message = styled.p`
   right: 0;
   margin: 0;
   padding-left: 3px;
-  color: ${onboardingColors.fieldMessage};
+  color: ${({ $tone }) =>
+    $tone === 'error' ? onboardingColors.fieldError : onboardingColors.fieldMessage};
   font-size: 12px;
   font-weight: 400;
   line-height: 14px;
+  white-space: nowrap;
 `
 
 // label: 입력창 위 이름표 (예: "아이디")
@@ -124,6 +127,7 @@ const Message = styled.p`
 // actionLabel / onActionClick: 입력창 오른쪽 작은 버튼 (예: "중복확인")
 // message: 입력창 아래 안내 문구. 문구가 나타날 수 있는 입력창이면 빈 문자열('')이라도 넘긴다.
 //   (undefined면 문구 칸을 아예 그리지 않음)
+// messageTone: 'info'(파란색, 기본) | 'error'(빨간색)
 // 옵션이 없으면 <input> 하나만 그린다 (로그인 화면 형태).
 export default function TextInput({
   label,
@@ -131,6 +135,7 @@ export default function TextInput({
   actionLabel,
   onActionClick,
   message,
+  messageTone = 'info',
   id,
   ...inputProps
 }) {
@@ -158,7 +163,7 @@ export default function TextInput({
       />
       {actionLabel && <ActionButton onClick={onActionClick}>{actionLabel}</ActionButton>}
       {hasMessageSlot && (
-        <Message id={messageId} role="status">
+        <Message id={messageId} role="status" $tone={messageTone}>
           {message}
         </Message>
       )}
