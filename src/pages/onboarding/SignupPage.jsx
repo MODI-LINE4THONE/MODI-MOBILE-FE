@@ -10,6 +10,11 @@ import ResultPopup from '../../components/onboarding/ResultPopup'
 // 비밀번호 조건: 8~16자, 영문 1자 이상 + 숫자 1자 이상 꼭 포함. 특수문자도 쓸 수 있음(띄어쓰기는 불가).
 const PASSWORD_RULE = /^(?=.*[A-Za-z])(?=.*\d)[\x21-\x7E]{8,16}$/
 
+// 아이디 길이 조건(앞뒤 공백 제외 4~15자)을 벗어났을 때 문구.
+// 늘 같은 문장이어야 화면 읽기 프로그램이 글자를 칠 때마다 다시 읽지 않는다.
+const ID_LENGTH_MESSAGE = '아이디는 4~15자로 입력해주세요.'
+const isIdLengthOk = (id) => id.length >= 4 && id.length <= 15
+
 const Form = styled.form`
   display: flex;
   flex: 1;
@@ -47,21 +52,29 @@ export default function SignupPage({ onBack, onGoToLogin }) {
   const [isPopupOpen, setIsPopupOpen] = useState(false)
 
   const [pending, setPending] = useState(false)
-  const [message, setMessage] = useState('')
-  const [error, setError] = useState('')
+  const [message, setMessage] = useState('') // 아이디 입력창 아래 문구 (중복확인 결과·오류)
+  const [isIdError, setIsIdError] = useState(false) // 위 문구가 오류이면 빨간색
+  const [error, setError] = useState('') // 회원가입 요청 오류 (아래쪽에 표시)
   const busy = useRef(false)
   const currentUserId = useRef('')
 
   const trimmedUserId = userId.trim()
   // 중복확인 뒤 아이디를 고치면 다시 확인해야 한다
   const isUserIdChecked = checkedUserId !== null && checkedUserId === userId
+  // 입력하는 동안 바로 보이는 길이 오류. 빈 칸이면 보이지 않는다.
+  const isIdLengthInvalid = trimmedUserId.length > 0 && !isIdLengthOk(trimmedUserId)
+  // 아이디 아래 문구는 하나만: 길이 오류 > 중복확인 결과·오류 > 없음
+  const idMessage = isIdLengthInvalid ? ID_LENGTH_MESSAGE : message
+  const isIdMessageError = isIdLengthInvalid || isIdError
   const isPasswordValid = PASSWORD_RULE.test(password)
   const canSubmit = !pending && isUserIdChecked && isPasswordValid && passwordConfirm === password
 
   const handleCheckUserId = async () => {
     if (busy.current) return
-    if (trimmedUserId.length < 4 || trimmedUserId.length > 15) {
-      setError('아이디는 4~15자로 입력해주세요.')
+    // 길이 조건을 벗어나면 서버에 묻지 않는다. 빈 칸에서 눌렀을 때도 이 문구를 보여준다.
+    if (!isIdLengthOk(trimmedUserId)) {
+      setMessage(ID_LENGTH_MESSAGE)
+      setIsIdError(true)
       return
     }
     const requestedId = userId
@@ -69,14 +82,19 @@ export default function SignupPage({ onBack, onGoToLogin }) {
     setPending(true)
     setError('')
     setMessage('')
+    setIsIdError(false)
     setCheckedUserId(null)
     try {
       const available = await checkId(trimmedUserId)
       if (currentUserId.current !== requestedId) return
       if (available) setCheckedUserId(requestedId)
       setMessage(available ? '사용 가능한 아이디입니다.' : '이미 사용 중인 아이디입니다.')
+      setIsIdError(!available)
     } catch (err) {
-      setError(err.message || '중복 확인에 실패했습니다.')
+      // 그사이 아이디를 고쳤으면 이전 아이디의 오류는 보여주지 않는다
+      if (currentUserId.current !== requestedId) return
+      setMessage(err.message || '중복 확인에 실패했습니다.')
+      setIsIdError(true)
     } finally {
       busy.current = false
       setPending(false)
@@ -109,7 +127,9 @@ export default function SignupPage({ onBack, onGoToLogin }) {
             label="아이디"
             actionLabel="중복확인"
             onActionClick={handleCheckUserId}
-            message={message}
+            message={idMessage}
+            messageTone={isIdMessageError ? 'error' : 'info'}
+            aria-invalid={isIdMessageError || undefined}
             type="text"
             placeholder="아이디 입력"
             autoComplete="username"
@@ -119,6 +139,7 @@ export default function SignupPage({ onBack, onGoToLogin }) {
               setUserId(e.target.value)
               setCheckedUserId(null)
               setMessage('')
+              setIsIdError(false)
             }}
           />
           <PasswordFields>
