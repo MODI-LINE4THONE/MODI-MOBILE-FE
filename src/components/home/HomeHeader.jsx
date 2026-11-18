@@ -12,7 +12,7 @@ const Header = styled.header`
   margin-top: 28px;
   padding: 0 24px 0 25px;
 `
-const Logo = styled.img`display: block; width: 57px; height: 20px;`
+const Logo = styled.img`display: block; width: 100px; height: auto;`
 const AccountButton = styled.button`
   display: grid; place-items: center; width: 44px; height: 44px; margin: -9px -9px -9px 0;
   padding: 0; border: 0; border-radius: 50%; background: transparent; cursor: pointer;
