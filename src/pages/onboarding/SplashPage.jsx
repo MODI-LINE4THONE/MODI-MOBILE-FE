@@ -10,20 +10,22 @@ const Content = styled.div`
   align-items: center;
   justify-content: center;
   min-height: 100dvh;
-  padding-bottom: 16px; /* 로고 묶음을 정중앙보다 살짝 위로 */
+  padding: 0 25px 16px; /* 로고 묶음을 정중앙보다 살짝 위로 */
 `
 
 const Logo = styled.img`
   display: block;
-  width: 209px;
+  width: 343px;
+  max-width: 100%;
   height: auto;
 `
 
 const Tagline = styled.p`
-  margin: 24px 0 0;
+  margin: 12px 0 0;
   font-size: 18px;
-  font-weight: 400;
+  font-weight: 600;
   line-height: 1.4;
+  letter-spacing: -.4px;
   text-align: center;
 `
 
