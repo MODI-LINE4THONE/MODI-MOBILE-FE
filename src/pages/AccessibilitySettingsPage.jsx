@@ -110,7 +110,14 @@ function SettingsEditor({ family, serverProfile }) {
   const preview = import.meta.env.DEV ? new URLSearchParams(location.search).get('preview') : null
   const returnToPractice = new URLSearchParams(location.search).get('returnTo') === 'practice'
   const practiceSearch = new URLSearchParams({ ...(serverProfile ? { profileId: String(serverProfile.profileId) } : {}), ...(preview === 'self' ? { preview: 'self' } : {}) })
-  const homePath = returnToPractice ? `/practice${practiceSearch.size ? '?' + practiceSearch : ''}` : family ? `/families/${encodeURIComponent(family.id)}${preview === 'family' ? '?preview=family' : ''}` : preview === 'self' ? '/home?preview=self' : '/home'
+  const practicePath = `/practice${practiceSearch.size ? '?' + practiceSearch : ''}`
+  const homePath = returnToPractice ? practicePath : family ? `/families/${encodeURIComponent(family.id)}${preview === 'family' ? '?preview=family' : ''}` : preview === 'self' ? '/home?preview=self' : '/home'
+  // 저장 완료 팝업 버튼: 본인 사용자는 키오스크 연습으로 (연습에서 들어온 경우와 가족은 그대로)
+  const { profile: sessionProfile } = useSession()
+  const isSelf = preview ? preview === 'self' : sessionProfile.target !== 'family'
+  const practiceNext = !returnToPractice && !family && isSelf
+  const popupPath = practiceNext ? practicePath : homePath
+  const popupLabel = returnToPractice ? '연습으로 돌아가기' : family ? '프로필로 돌아가기' : practiceNext ? '키오스크 연습하러 가기' : '홈으로 돌아가기'
   const changed = settingsChanged(value, saved)
   useEffect(() => { const previous = document.title; document.title = '접근성 설정 - MODI'; mainRef.current?.focus(); window.scrollTo(0, 0); return () => { document.title = previous } }, [])
   async function save() {
@@ -120,7 +127,9 @@ function SettingsEditor({ family, serverProfile }) {
     try {
       if (serverProfile) {
         const confirmed = await profileApi.save(serverProfile.profileId, next)
-        setValue(confirmed); setSaved(confirmed)
+        // 서버 응답에는 탭·추천 조합 정보가 없어 보던 탭(mode)과 조합(preset)은 그대로 둔다
+        const kept = { ...confirmed, mode: next.mode, preset: next.preset }
+        setValue(kept); setSaved(kept)
       } else {
         if (family) saveFamilySettings(family.id, next); else saveSettings(next)
         setValue(next); setSaved(next)
@@ -157,6 +166,6 @@ function SettingsEditor({ family, serverProfile }) {
       </fieldset>
       <Footer $custom={value.mode === 'custom'}><PrimaryButton ref={saveRef} disabled={!changed || pending} onClick={save}>{pending ? '저장 중…' : '이 조합으로 저장하기'}</PrimaryButton>{error && <Notice role="alert">{error}</Notice>}</Footer>
     </Main>
-    <Dialog ref={dialogRef} aria-labelledby="saved-title" onClose={() => saveRef.current?.focus()}><img src={success} alt="" /><h2 id="saved-title">접근성 설정 저장 완료</h2><button type="button" autoFocus onClick={() => { dialogRef.current.close(); navigate(homePath, { replace: true }) }}>{returnToPractice ? '연습으로 돌아가기' : family ? '프로필로 돌아가기' : '홈으로 돌아가기'}</button></Dialog>
+    <Dialog ref={dialogRef} aria-labelledby="saved-title" onClose={() => saveRef.current?.focus()}><img src={success} alt="" /><h2 id="saved-title">접근성 설정 저장 완료</h2><button type="button" autoFocus onClick={() => { dialogRef.current.close(); navigate(popupPath, { replace: true }) }}>{popupLabel}</button></Dialog>
   </Layout>
 }
