@@ -3,7 +3,7 @@ import OnboardingLayout from '../../components/onboarding/OnboardingLayout'
 import IconCard from '../../components/onboarding/IconCard'
 import HomeHeader from '../../components/home/HomeHeader'
 import { onboardingColors } from '../../styles/onboarding/colors'
-import personIcon from '../../assets/icons/icon-person.svg'
+import settingIcon from '../../assets/icons/icon-setting.svg'
 import kioskIcon from '../../assets/icons/icon-kiosk.svg'
 import keyringIcon from '../../assets/icons/icon-keyring.svg'
 
@@ -73,8 +73,8 @@ export default function SelfHomePage({
         </Greeting>
         <CardList>
           <IconCard
-            icon={personIcon}
-            iconOffsetY={1}
+            icon={settingIcon}
+            iconWidth={45} /* 50x50 정사각형 → 45x45, 원 정가운데 */
             paddingLeft={HOME_CARD_PADDING_LEFT}
             gap={HOME_CARD_GAP}
             onClick={onSettingsClick ?? noop}
