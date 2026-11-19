@@ -15,6 +15,10 @@ const PASSWORD_RULE = /^(?=.*[A-Za-z])(?=.*\d)[\x21-\x7E]{8,16}$/
 const ID_LENGTH_MESSAGE = '아이디는 4~15자로 입력해주세요.'
 const isIdLengthOk = (id) => id.length >= 4 && id.length <= 15
 
+// 비밀번호 입력창 아래 문구. 아이디 문구처럼 늘 같은 문장이다.
+const PASSWORD_RULE_MESSAGE = '비밀번호는 영문과 숫자를 모두 포함한 8~16자로 입력해주세요.'
+const PASSWORD_MISMATCH_MESSAGE = '비밀번호가 일치하지 않습니다.'
+
 const Form = styled.form`
   display: flex;
   flex: 1;
@@ -67,6 +71,11 @@ export default function SignupPage({ onBack, onGoToLogin }) {
   const idMessage = isIdLengthInvalid ? ID_LENGTH_MESSAGE : message
   const isIdMessageError = isIdLengthInvalid || isIdError
   const isPasswordValid = PASSWORD_RULE.test(password)
+  // 입력하는 동안 바로 보이는 비밀번호 문구. 빈 칸이면 보이지 않는다.
+  // 조건 문구는 조건을 만족하지 않을 때만, "비밀번호 확인" 칸은 만족할 때만 보여서 둘이 같이 보이지 않는다.
+  const isPasswordRuleInvalid = password.length > 0 && !isPasswordValid
+  // 비밀번호를 나중에 고쳐도 매번 다시 비교한다.
+  const isPasswordMismatch = passwordConfirm.length > 0 && passwordConfirm !== password
   const canSubmit = !pending && isUserIdChecked && isPasswordValid && passwordConfirm === password
 
   const handleCheckUserId = async () => {
@@ -140,25 +149,39 @@ export default function SignupPage({ onBack, onGoToLogin }) {
               setCheckedUserId(null)
               setMessage('')
               setIsIdError(false)
+              // 입력을 고치면 지난 회원가입 실패 문구는 지운다 (입력창 아래 문구와 겹치지 않게)
+              setError('')
             }}
           />
           <PasswordFields>
             <TextInput
               label="비밀번호"
+              message={isPasswordRuleInvalid ? PASSWORD_RULE_MESSAGE : ''}
+              messageTone="error"
+              aria-invalid={isPasswordRuleInvalid || undefined}
               type="password"
               placeholder="비밀번호 입력 (영문+숫자 8~16자)"
               autoComplete="new-password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value)
+                setError('')
+              }}
             />
             {/* 조건을 만족하지 않으면 숨긴다. 입력했던 값(passwordConfirm)은 그대로 남는다. */}
             {isPasswordValid && (
               <TextInput
                 label="비밀번호 확인"
+                message={isPasswordMismatch ? PASSWORD_MISMATCH_MESSAGE : ''}
+                messageTone="error"
+                aria-invalid={isPasswordMismatch || undefined}
                 type="password"
                 autoComplete="new-password"
                 value={passwordConfirm}
-                onChange={(e) => setPasswordConfirm(e.target.value)}
+                onChange={(e) => {
+                  setPasswordConfirm(e.target.value)
+                  setError('')
+                }}
               />
             )}
           </PasswordFields>
