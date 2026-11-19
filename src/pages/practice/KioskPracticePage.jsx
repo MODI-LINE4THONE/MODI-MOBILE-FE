@@ -123,11 +123,6 @@ function Practice({ settings, profileId, preview = false }) {
   }
   const icon = name => options.highContrast ? ca[`${name}Contrast`] ?? a[name] : a[name]
   useLayoutEffect(() => { main.current?.focus(); window.scrollTo(0, 0); document.title = '키오스크 연습 - MODI' }, [step])
-  useEffect(() => {
-    if (step !== 'intro') return
-    const timer = setTimeout(() => dispatch({ type: 'next' }), 1600)
-    return () => clearTimeout(timer)
-  }, [step])
 
   const product = (item = selectedMenu, showOptions = false) => <S.ProductRow><Photo id={item.id} size={50} /><div><strong>{item.name}{!showOptions && ` ${formatPrice(item.price)}`}</strong>{showOptions && <p>{optionText(item)}{'quantity' in item && <>{options.largeText ? <br /> : ' '}{item.quantity}잔</>}</p>}</div></S.ProductRow>
   function stageContent() {
@@ -152,7 +147,7 @@ function Practice({ settings, profileId, preview = false }) {
   return <S.Layout><OnboardingHeader title="키오스크 연습" onBack={back} /><S.Main ref={main} tabIndex={-1}>
     {step === 'settings' ? <><h2>현재 저장된 접근성 설정을 확인하세요.</h2>{enabled.length ? <S.SettingsList>{enabled.map(option => <li key={option.id}><img src={a.settingsCheck} alt="" /><span>{option.label}</span></li>)}</S.SettingsList> : <S.Empty><img src={a.empty} alt="" /><p>아직 저장된 접근성 설정이 없어요.<br />기본 키오스크 화면으로 연습하게 돼요.</p></S.Empty>}<S.IntroActions><PrimaryButton onClick={next}>연습 시작하기</PrimaryButton><button onClick={() => navigate(`/accessibility?${new URLSearchParams({ ...(profileId ? { profileId: String(profileId) } : {}), ...(preview ? { preview: 'self' } : {}), returnTo: 'practice' })}`)}>접근성 설정 다시 하기</button></S.IntroActions></>
       : step === 'tutorial' ? <><h2>연습 전에 간단히 알아볼까요?</h2><S.Description>자주 보는 버튼과 화면 조작법을 알려드려요.</S.Description><Tutorial /><S.IntroActions><PrimaryButton onClick={next}>다음</PrimaryButton><button onClick={back}>이전으로</button></S.IntroActions></>
-      : step === 'intro' ? <><h2>이제 키오스크 주문 연습이 시작됩니다.</h2><S.Description role="status">실제로 주문되지 않으니, 편하게 연습하세요.</S.Description><S.IntroActions><S.Back onClick={back}>이전으로</S.Back></S.IntroActions></>
+      : step === 'intro' ? <><h2>이제 키오스크 주문 연습이 시작됩니다.</h2><S.Description role="status">실제로 주문되지 않으니, 편하게 연습하세요.</S.Description><S.IntroActions><PrimaryButton onClick={next}>다음</PrimaryButton><button onClick={back}>이전으로</button></S.IntroActions></>
       : step === 'finish' ? <><h2>연습을 모두 마쳤어요.</h2><S.Description>이제 매장 키오스크에서도 해볼 수 있어요.</S.Description><S.FinishList>{finishLabels.map(label => <li key={label}><img src={a.checkSmall} alt="" />{label}</li>)}</S.FinishList><S.Footer style={{ marginTop: 'auto' }}><S.Back onClick={() => dispatch({ type: 'restart' })}>다시 연습하기</S.Back><S.Next onClick={home}>홈으로</S.Next></S.Footer></>
       : <><h2>{info[step][0]}</h2><S.Description>{info[step][1]}</S.Description><S.Stage $options={options} data-large={options.largeText} data-bottom={options.bottomControls} data-step={step} aria-label={`${info[step][0]} 연습 영역`} onPointerDown={event => { pointerStart.current = { id: event.pointerId, x: event.clientX, y: event.clientY } }} onPointerCancel={() => { pointerStart.current = null }} onPointerUp={correctTouch}>{options.bottomControls ? <S.BottomContent>{stageContent()}</S.BottomContent> : stageContent()}</S.Stage><S.Help><span><img src={a.helpCircle} alt="" /><img src={a.helpBulb} alt="" /></span><div><h3>도움말</h3><p>{info[step][2]}</p></div></S.Help><S.Footer><S.Back onClick={back}>이전으로</S.Back><S.Next disabled={!canContinue(state)} onClick={next}>다음</S.Next></S.Footer></>}
   </S.Main></S.Layout>
