@@ -16,7 +16,8 @@ export const Main = styled.main`
 export const Description = styled.p`margin: 12px 0 0; color: ${c.textSub}; font-size: 14px; line-height: 22px; letter-spacing: -.45px;`
 export const IntroActions = styled.div`
   margin-top: auto; padding-top: 32px;
-  > button:last-child:not(:first-child) { display: block; width: 100%; border: 0; background: transparent; color: ${c.textSub}; font-size: 18px; line-height: 32px; margin-top: 13px; min-height: 44px; }
+  /* margin-top 14 + 높이 44 + Main 아래 여백 61 = 파란 버튼 아래 119px (OnboardingFooter와 같은 위치) */
+  > button:last-child:not(:first-child) { display: block; width: 100%; border: 0; background: transparent; color: ${c.textSub}; font-size: 18px; line-height: 32px; margin-top: 14px; min-height: 44px; }
 `
 export const Empty = styled.div`
   flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px 0;
@@ -28,7 +29,9 @@ export const SettingsList = styled.ul`
   span { padding: 2px 9px; border-radius: 15px; background: white; box-shadow: inset 0 0 4px #2456e840; }
 `
 export const TutorialCard = styled.div`
-  margin-top: 17px; padding: 24px 21px; background: ${c.cardBackground}; border-radius: 30px; display: grid; gap: 11px;
+  position: relative; margin-top: 17px; padding: 24px 21px; background: ${c.cardBackground}; border-radius: 30px; display: grid; gap: 11px;
+  /* 버튼 칩 목록과 설명 사이 세로 구분선 (피그마 x=161, 카드 위에서 19px, 1x238) */
+  &::before { content: ''; position: absolute; top: 19px; left: 136px; width: 1px; height: 238px; background: #dee1e9; }
 `
 export const TutorialRow = styled.div`
   display: grid; grid-template-columns: 116px 1fr; gap: 16px; align-items: center;
@@ -37,6 +40,9 @@ export const TutorialRow = styled.div`
 export const Pill = styled.span`
   display: inline-flex; justify-content: center; align-items: center; gap: 3px; justify-self: start; min-height: 29px; padding: 0 10px; border-radius: 15px; background: white; color: ${c.primary}; font-size: 16px; white-space: nowrap; box-shadow: inset 0 0 4px #2456e840;
 `
+// "+", "−" 칩: 기호만 크고 굵게. 칩 높이 29px는 유지.
+// ＋(전각)와 −는 글자 너비가 달라서, 두 칩 너비를 피그마와 같은 36px로 고정하고 기호는 가운데 정렬.
+export const SymbolPill = styled(Pill)`width: 36px; padding: 0; font-size: 30px; font-weight: 500; line-height: 29px; color: ${c.primary};`
 export const Gestures = styled.div`
   margin-top: 20px; padding: 14px 12px; border-radius: 30px; background: ${c.cardBackground}; display: flex; justify-content: space-around; align-items: end; gap: 6px;
   > div { width: 100px; text-align: center; }

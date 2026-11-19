@@ -84,7 +84,7 @@ function Tutorial() {
     [<S.Pill key="prev"><img src={a.prev} alt="" /> 이전</S.Pill>, '앞 단계로 돌아가요.'],
     [<S.Pill key="home"><img src={a.home} alt="" /> 처음으로</S.Pill>, '첫 화면으로 돌아가요.'],
     [<S.Pill key="cart"><img src={a.cart} alt="" /> 장바구니</S.Pill>, '담은 메뉴를 확인해요.'],
-    [<span key="quantity" style={{ display: 'flex', gap: 8 }}><S.Pill>＋</S.Pill><S.Pill>−</S.Pill></span>, '수량을 늘리거나 줄여요.'],
+    [<span key="quantity" style={{ display: 'flex', gap: 8 }}><S.SymbolPill>＋</S.SymbolPill><S.SymbolPill>−</S.SymbolPill></span>, '수량을 늘리거나 줄여요.'],
     [<S.Pill key="choose"><img src={a.tick} alt="" /> 선택하기</S.Pill>, '메뉴나 옵션을 골라요.'],
   ]
   return <><S.TutorialCard>{rows.map(([icon, text]) => <S.TutorialRow key={text}>{icon}<p>{text}</p></S.TutorialRow>)}</S.TutorialCard><S.Gestures>
