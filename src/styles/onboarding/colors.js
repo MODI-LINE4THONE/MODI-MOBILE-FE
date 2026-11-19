@@ -66,6 +66,9 @@ export const onboardingColors = {
   filterChipSelectedBackground: '#2456E8',
   filterChipSelectedText: '#FFFFFF',
 
+  // 키오스크 연습: 색상 고대비 + 터치 위치 안내가 함께 켜졌을 때 눌러야 할 버튼 그림자
+  practiceGuideContrastShadow: '#FFFFFF',
+
   // 상태 표시줄
   statusBarTime: '#333333',
   statusBarIcon: '#000000',
