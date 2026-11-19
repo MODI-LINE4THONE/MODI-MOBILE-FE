@@ -64,9 +64,9 @@ export const Stage = styled.section`
   [data-choice][data-white] { background: ${({ $options }) => $options.highContrast ? '#ffee00' : 'white'}; color: var(--ink); }
   [data-choice][data-white][aria-pressed='true'] { background: ${({ $options }) => $options.highContrast ? '#00e1ff' : '#e8effe'}; }
   [data-choice][data-guided='true'] {
-    box-shadow: ${({ $options }) => $options.touchGuidance
-      ? '0 0 7px 1px rgba(36,86,232,.55), inset 0 0 3px rgba(36,86,232,.75)'
-      : undefined};
+    box-shadow: ${({ $options }) => !$options.touchGuidance ? undefined
+      : $options.highContrast ? `0 0 4px 5px ${c.practiceGuideContrastShadow}`
+      : '0 0 7px 1px rgba(36,86,232,.55), inset 0 0 3px rgba(36,86,232,.75)'};
   }
 
   > [data-product] { margin-top: 10px; }
