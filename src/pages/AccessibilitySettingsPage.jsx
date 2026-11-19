@@ -72,7 +72,7 @@ const Switch = styled.input.attrs({ type: 'checkbox', role: 'switch' })`
   &:checked { border-color: #2456e8; background: #2456e8; }
   &:checked::after { width: 24px; height: 24px; top: 2px; left: 22px; background: white; }
 `
-const Footer = styled.footer`margin-top: auto; padding-top: ${({ $custom }) => $custom ? 25 : 46}px; padding-bottom: ${({ $custom }) => $custom ? 16 : 46}px;`
+const Footer = styled.footer`margin-top: auto; padding-top: ${({ $custom }) => $custom ? 25 : 46}px; padding-bottom: 64px;`
 const Notice = styled.p`margin: 5px 0 0; color: #5b6575; font-size: 11px; line-height: 16px; text-align: center;`
 const Dialog = styled.dialog`
   box-sizing: border-box; width: min(288px, calc(100vw - 32px)); padding: 24px 20px; border: 0; border-radius: 20px; text-align: center; font-family: inherit; color: #191f28;
@@ -155,7 +155,7 @@ function SettingsEditor({ family, serverProfile }) {
         {optionDefinitions.map(option => <Option key={option.id} $active={value.options[option.id]}><span><strong>{option.label}</strong><small id={`${option.id}-description`}>{option.description}</small></span><Switch aria-label={option.label} aria-describedby={`${option.id}-description`} checked={value.options[option.id]} onChange={event => setValue({ ...value, options: { ...value.options, [option.id]: event.target.checked } })} /></Option>)}
       </Options></section>}
       </fieldset>
-      <Footer $custom={value.mode === 'custom'}><PrimaryButton ref={saveRef} disabled={!changed || pending} onClick={save}>{pending ? '저장 중…' : '이 조합으로 저장하기'}</PrimaryButton><Notice>{serverProfile ? `${serverProfile.name}님의 설정을 서버에 저장합니다.` : family ? '가족 설정은 현재 미리보기 세션에만 반영됩니다.' : '현재 설정은 이 브라우저에만 저장됩니다.'}</Notice>{error && <Notice role="alert">{error}</Notice>}</Footer>
+      <Footer $custom={value.mode === 'custom'}><PrimaryButton ref={saveRef} disabled={!changed || pending} onClick={save}>{pending ? '저장 중…' : '이 조합으로 저장하기'}</PrimaryButton>{error && <Notice role="alert">{error}</Notice>}</Footer>
     </Main>
     <Dialog ref={dialogRef} aria-labelledby="saved-title" onClose={() => saveRef.current?.focus()}><img src={success} alt="" /><h2 id="saved-title">접근성 설정 저장 완료</h2><button type="button" autoFocus onClick={() => { dialogRef.current.close(); navigate(homePath, { replace: true }) }}>{returnToPractice ? '연습으로 돌아가기' : family ? '프로필로 돌아가기' : '홈으로 돌아가기'}</button></Dialog>
   </Layout>
